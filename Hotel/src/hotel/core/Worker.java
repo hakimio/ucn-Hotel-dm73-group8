@@ -30,9 +30,6 @@ public class Worker extends Person
         if (birth.compareTo(youngster) > 0)
             throw new IllegalArgumentException("Employee too young to " +
                     "work.");
-        if (startedWorking.compareTo(new Date()) < 0)
-            throw new IllegalArgumentException("Date at which worker starts " +
-                    "working in the company can not be in the past.");
         
         if (position.isEmpty())
             throw new IllegalArgumentException("Position can not be " +
