@@ -2,15 +2,26 @@ package hotel.core;
 
 public class Room
 {
-    private int meterCost, sqMeters, nrOfBedrooms;
+    private int meterCost, sqMeters, nrOfBedrooms, roomNr;
     private boolean clean;
     
-    public Room(int meterCost, int sqMeters, int nrOfBedrooms)
+    public Room(int roomNr, int meterCost, int sqMeters, int nrOfBedrooms)
     {
+        this.roomNr = roomNr;
         this.meterCost = meterCost;
         this.sqMeters = sqMeters;
         this.nrOfBedrooms = nrOfBedrooms;
         clean = true;
+    }
+
+    public void setRoomNr(int roomNr)
+    {
+        this.roomNr = roomNr;
+    }
+
+    public int getRoomNr()
+    {
+        return roomNr;
     }
 
     public boolean isClean()
