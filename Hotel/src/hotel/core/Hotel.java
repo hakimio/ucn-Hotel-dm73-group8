@@ -27,7 +27,7 @@ public class Hotel
         bookings = new ArrayList<Booking>();
     }
     
-        public Hotel(String name, String address, Room[] rooms)
+    public Hotel(String name, String address, Room[] rooms)
     {
         this(name, address);
         this.rooms.addAll(Arrays.asList(rooms));
@@ -37,6 +37,36 @@ public class Hotel
     {
         this(name, address, rooms);
         addWorkers(workers);
+    }
+    
+    public boolean addBooking(Booking booking)
+    {
+        return bookings.add(booking);
+    }
+    
+    public boolean removeBooking(Booking booking)
+    {
+        return bookings.remove(booking);
+    }
+    
+    public Booking getBookingById(int id)
+    {
+        return bookings.get(id);
+    }
+    
+    public boolean addRoom(Room room)
+    {
+        return rooms.add(room);
+    }
+    
+    public boolean removeRoom(Room room)
+    {
+        return rooms.remove(room);
+    }
+    
+    public Room getRoomById(int id)
+    {
+        return rooms.get(id);
     }
     
     public final void addWorkers(Worker[] workers)
@@ -66,12 +96,7 @@ public class Hotel
     {   
         return guests.remove(guest);
     }
-    
-    public Room getRoomById(int id)
-    {
-        return rooms.get(id);
-    }
- 
+     
     public Worker getWorkerById(int id)
     {
         return workers.get(id);
