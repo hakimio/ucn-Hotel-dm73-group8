@@ -18,6 +18,11 @@ public class ExpenseDB
         return where("");
     }
     
+    public ArrayList<Expense> getExpensesByGuest(String name)
+    {
+        return where("guestName ='" + name + "'");
+    }
+    
     public Expense getExpense(String name)
     {
         return singleWhere("name='"+name+"'");

@@ -22,6 +22,11 @@ public class WorkerDB
     {
         return singleWhere("name='"+name+"'");
     }
+    
+    public ArrayList<Worker> getWorkersByHotel(String name)
+    {
+        return where("hotelName ='" + name + "'");
+    }
         
     private Worker singleWhere(String wClause)
     {

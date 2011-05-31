@@ -93,45 +93,25 @@ public class HotelDB
             Hotel hotel = new Hotel(name, address);
             
             RoomDB roomDB = new RoomDB();
-            ArrayList<Room> rooms = roomDB.getRooms();
+            ArrayList<Room> rooms = roomDB.getRoomsByHotel(name);
             GuestDB guestDB = new GuestDB();
-            ArrayList<Guest> guests = guestDB.getGuests();
+            ArrayList<Guest> guests = guestDB.getGuestsByHotel(name);
             WorkerDB workerDB = new WorkerDB();
-            ArrayList<Worker> workers = workerDB.getWorkers();
+            ArrayList<Worker> workers = workerDB.getWorkersByHotel(name);
             BookingDB bookingDB = new BookingDB();
-            ArrayList<Booking> bookings = bookingDB.getBookings();
+            ArrayList<Booking> bookings = bookingDB.getBookingsByHotel(name);
             
             for(int i = 0; i < rooms.size(); i++)
-            {
-                Room room = rooms.get(i);
-                
-                if (roomDB.getHotelName(room).equalsIgnoreCase(name))
-                    hotel.addRoom(room);
-            }
+                hotel.addRoom(rooms.get(i));
             
             for (int i = 0; i < guests.size(); i++)
-            {
-                Guest guest = guests.get(i);
-                
-                if (guestDB.getHotelName(guest).equalsIgnoreCase(name))
-                    hotel.addGuest(guest);
-            }
+                hotel.addGuest(guests.get(i));
             
             for (int i = 0; i < workers.size(); i++)
-            {
-                Worker worker = workers.get(i);
-                
-                if (workerDB.getHotelName(worker).equalsIgnoreCase(name))
-                    hotel.addWorker(worker);
-            }
+                hotel.addWorker(workers.get(i));
             
             for(int i = 0; i < bookings.size(); i++)
-            {
-                Booking booking = bookings.get(i);
-                
-                if (bookingDB.getHotelName(booking).equalsIgnoreCase(name))
-                    hotel.addBooking(booking);
-            }
+                hotel.addBooking(bookings.get(i));
             
             return hotel;
         }

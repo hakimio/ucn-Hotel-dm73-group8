@@ -24,6 +24,11 @@ public class GuestDB
         return singleWhere("name = '"+name+"'");
     }
     
+    public ArrayList<Guest> getGuestsByHotel(String name)
+    {
+        return where("hotelName = '" + name + "'");
+    }
+    
     private Guest singleWhere(String wClause)
     {
         ResultSet results;
@@ -92,14 +97,10 @@ public class GuestDB
             String name = rs.getString("name");
             Guest guest = new Guest(name);
             ExpenseDB expenseDB = new ExpenseDB();
-            ArrayList<Expense> expenses = expenseDB.getExpenses();
+            ArrayList<Expense> expenses = expenseDB.getExpensesByGuest(name);
             
             for(int i = 0; i < expenses.size(); i++)
-            {
-                Expense expense = expenses.get(i);
-                if (expenseDB.getGuestName(expense).equalsIgnoreCase(name))
-                    guest.addExpense(expense);
-            }
+                guest.addExpense(expenses.get(i));
             
             return guest;
         }

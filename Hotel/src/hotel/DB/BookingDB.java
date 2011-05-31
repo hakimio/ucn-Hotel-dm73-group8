@@ -19,6 +19,11 @@ public class BookingDB
     {
         return where("");
     }
+    
+    public ArrayList<Booking> getBookingsByHotel(String name)
+    {
+        return where("hotelName ='" + name + "'");
+    }
         
     public Booking getBooking(int id)
     {
@@ -97,9 +102,10 @@ public class BookingDB
             int discount = rs.getInt("discount");
             Date arrivalDate = rs.getDate("arrivalDate");
             Date leavingDate = rs.getDate("leavingDate");
+            String hotelName = rs.getString("hotelName");
             
             RoomDB roomDB = new RoomDB();
-            Room room = roomDB.getRoom(roomNr);
+            Room room = roomDB.getRoom(roomNr, hotelName);
             GuestDB guestDB = new GuestDB();
             Guest guest = guestDB.getGuest(guestName);
             

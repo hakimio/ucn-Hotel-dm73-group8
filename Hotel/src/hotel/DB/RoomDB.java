@@ -18,9 +18,15 @@ public class RoomDB
         return where("");
     }
     
-    public Room getRoom(int roomNr)
+    public ArrayList<Room> getRoomsByHotel(String name)
     {
-        return singleWhere("roomNr=" + roomNr);
+        return where("hotelName ='" + name + "'");
+    }
+    
+    public Room getRoom(int roomNr, String hotelName)
+    {
+        return singleWhere("roomNr=" + roomNr + " AND hotelName='" 
+                + hotelName + "'");
     }
         
     private Room singleWhere(String wClause)
@@ -103,11 +109,12 @@ public class RoomDB
         return null;
     }
     
-    public int delete(int roomNr)
+    public int delete(int roomNr, String hotelName)
     {
         //row count
         int rc = -1;
-        String query = "DELETE FROM rooms WHERE roomNr=" + roomNr;
+        String query = "DELETE FROM rooms WHERE roomNr=" + roomNr + " AND"
+                + " hotelName='" + hotelName + "'";
         try
         {
             Statement stmt = con.createStatement();
@@ -187,7 +194,7 @@ public class RoomDB
         return hotelName;
     }
     
-    public int updateRoom(Room room, String oldRoomNr)
+    public int updateRoom(Room room, String oldRoomNr, String hotelName)
     {
         int rc = -1;
         
@@ -196,7 +203,7 @@ public class RoomDB
                 "meterCost ='" + room.getMeterCost() + "', " +
                 "sqMeters ='" + room.getSqMeters() + "', " +
                 "nrOfBedrooms ='" + room.getNrOfBedrooms() + "', "+
-                "WHERE roomNr="+ oldRoomNr;
+                "WHERE roomNr="+ oldRoomNr + " AND hotelName ='"+hotelName+"'";
         try
         {
             Statement stmt = con.createStatement();
