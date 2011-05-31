@@ -19,9 +19,9 @@ public class GuestDB
         return where("");
     }
         
-    public Guest getGuest(String name)
+    public Guest getGuest(String name, String hotelName)
     {
-        return singleWhere("name = '"+name+"'");
+        return singleWhere("name = '"+name+"' AND hotelName='"+hotelName +"'");
     }
     
     public ArrayList<Guest> getGuestsByHotel(String name)
@@ -112,11 +112,12 @@ public class GuestDB
         return null;
     }
     
-    public int delete(String name)
+    public int delete(String name, String hotelName)
     {
         //row count
         int rc = -1;
-        String query = "DELETE FROM guests WHERE name='" + name + "'";
+        String query = "DELETE FROM guests WHERE name='" + name + "' AND "
+                + "hotelName='" + hotelName + "'";
         try
         {
             Statement stmt = con.createStatement();
@@ -193,12 +194,12 @@ public class GuestDB
         return rc;
     }
     
-    public int updateGuest(Guest guest, String oldName)
+    public int updateGuest(Guest guest, String oldName, String hotelName)
     {
         int rc = -1;
         String query = "Update guests SET "+
                 "name ='" + guest.getName() + "', "+
-                "WHERE name='" + oldName + "'";
+                "WHERE name='" + oldName + "' AND hotelName='"+hotelName+"'";
         try
         {
             Statement stmt = con.createStatement();

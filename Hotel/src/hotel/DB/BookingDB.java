@@ -107,7 +107,7 @@ public class BookingDB
             RoomDB roomDB = new RoomDB();
             Room room = roomDB.getRoom(roomNr, hotelName);
             GuestDB guestDB = new GuestDB();
-            Guest guest = guestDB.getGuest(guestName);
+            Guest guest = guestDB.getGuest(guestName, hotelName);
             
             Booking booking = new Booking(id, room, guest, arrivalDate, 
                     leavingDate, discount);

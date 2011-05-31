@@ -23,9 +23,9 @@ public class ExpenseDB
         return where("guestName ='" + name + "'");
     }
     
-    public Expense getExpense(String name)
+    public Expense getExpense(String name, String guestName)
     {
-        return singleWhere("name='"+name+"'");
+        return singleWhere("name='"+name+"' AND guestName='" + guestName + "'");
     }
 
     
@@ -107,11 +107,12 @@ public class ExpenseDB
         return null;
     }
     
-    public int delete(String name)
+    public int delete(String name, String guestName)
     {
         //row count
         int rc = -1;
-        String query = "DELETE FROM expenses WHERE name='"+name + "'";
+        String query = "DELETE FROM expenses WHERE name='"+name + "' AND "
+                + "guestName='" + guestName + "'";
         try
         {
             Statement stmt = con.createStatement();
@@ -188,13 +189,13 @@ public class ExpenseDB
         return guestName;
     }
     
-    public int updateExpense(Expense expense, String oldName)
+    public int updateExpense(Expense expense, String oldName, String guestName)
     {
         int rc = -1;
         String query = "Update expenses SET "+
                 "name ='" + expense.getName() + "', "+
                 "price ='" + expense.getPrice() + "', "+
-                "WHERE name='" + oldName + "'";
+                "WHERE name='" + oldName + "' AND guestName='"+guestName+"'";
         try
         {
             Statement stmt = con.createStatement();

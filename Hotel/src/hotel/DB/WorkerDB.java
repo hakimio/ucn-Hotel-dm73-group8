@@ -18,9 +18,9 @@ public class WorkerDB
         return where("");
     }
     
-    public Worker getWorker(String name)
+    public Worker getWorker(String name, String hotelName)
     {
-        return singleWhere("name='"+name+"'");
+        return singleWhere("name='"+name+"' AND hotelName='" + hotelName + "'");
     }
     
     public ArrayList<Worker> getWorkersByHotel(String name)
@@ -110,11 +110,12 @@ public class WorkerDB
         return null;
     }
     
-    public int delete(String name)
+    public int delete(String name, String hotelName)
     {
         //row count
         int rc = -1;
-        String query = "DELETE FROM workers WHERE name='" + name + "'";
+        String query = "DELETE FROM workers WHERE name='" + name + "' AND "
+                + "hotelName='" + hotelName +"'";
         try
         {
             Statement stmt = con.createStatement();
@@ -195,7 +196,7 @@ public class WorkerDB
         return hotelName;
     }
     
-    public int updateWorker(Worker worker, String oldName)
+    public int updateWorker(Worker worker, String oldName, String hotelName)
     {
         int rc = -1;
         Date birthDate = new Date(worker.getBirthDate().getTime());
@@ -207,7 +208,7 @@ public class WorkerDB
                 "startedWorking ='" + startedWorking + "', " +
                 "position ='" + worker.getPosition() + "', "+
                 "income ='" + worker.getIncome() + "' "+
-                "WHERE name= '"+ oldName +"'";
+                "WHERE name= '"+ oldName +"' AND hotelName='" + hotelName + "'";
         try
         {
             Statement stmt = con.createStatement();

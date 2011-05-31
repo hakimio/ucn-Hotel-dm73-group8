@@ -194,7 +194,7 @@ public class RoomDB
         return hotelName;
     }
     
-    public int updateRoom(Room room, String oldRoomNr, String hotelName)
+    public int updateRoom(Room room, int oldRoomNr, String hotelName)
     {
         int rc = -1;
         
