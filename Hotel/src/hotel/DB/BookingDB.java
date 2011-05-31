@@ -25,9 +25,9 @@ public class BookingDB
         return where("hotelName ='" + name + "'");
     }
         
-    public Booking getBooking(int id)
+    public Booking getBooking(int id, String hotelName)
     {
-        return singleWhere("id = " + id);
+        return singleWhere("id = " + id + " AND hotelName='" + hotelName + "'");
     }
     
     private Booking singleWhere(String wClause)
@@ -122,11 +122,12 @@ public class BookingDB
         return null;
     }
     
-    public int delete(int id)
+    public int delete(int id, String hotelName)
     {
         //row count
         int rc = -1;
-        String query = "DELETE FROM guests WHERE id=" + id;
+        String query = "DELETE FROM guests WHERE id=" + id + " AND "
+                + "hotelName='" + hotelName + "'";
         try
         {
             Statement stmt = con.createStatement();
@@ -209,7 +210,7 @@ public class BookingDB
         return rc;
     }
     
-    public int updateBooking(Booking booking)
+    public int updateBooking(Booking booking, String hotelName)
     {
         int rc = -1;
         Date arrivalDate = new Date(booking.getArrivalDate().getTime());
@@ -221,7 +222,8 @@ public class BookingDB
                 "arrivalDate ='" + arrivalDate + "', "+
                 "leavingDate ='" + leavingDate + "', "+
                 "discount ='" + booking.getDiscount() + "', "+
-                "WHERE id='" + booking.getId() + "'";
+                "WHERE id='" + booking.getId() + "' AND hotelName='" + 
+                hotelName + "'";
         try
         {
             Statement stmt = con.createStatement();
