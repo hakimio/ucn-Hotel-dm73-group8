@@ -1,4 +1,4 @@
-package controller;
+package hotel.controller;
 
 import hotel.core.Room;
 import hotel.DB.RoomDB;

@@ -1,4 +1,4 @@
-package controller;
+package hotel.controller;
 
 import java.util.ArrayList;
 import hotel.core.Worker;
