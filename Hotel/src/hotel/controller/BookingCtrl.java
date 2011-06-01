@@ -6,18 +6,23 @@ import hotel.core.Booking;
 import hotel.core.Guest;
 import hotel.core.Room;
 import hotel.DB.BookingDB;
+import hotel.utils.IdGenerator;
 
 public class BookingCtrl
 {
     private String hotelName;
     private ArrayList<Booking> bookings;
     private BookingDB bookingDB;
+    private IdGenerator idGenerator;
     
     public BookingCtrl(String hotelName)
     {
         this.hotelName = hotelName;
         bookingDB = new BookingDB();
         bookings = bookingDB.getBookingsByHotel(hotelName);
+        idGenerator = new IdGenerator();
+        for (int i = 0; i < bookings.size(); i++)
+            idGenerator.addId(bookings.get(i).getId());
     }
     
     public String getHotelName()
@@ -31,7 +36,7 @@ public class BookingCtrl
         bookings = bookingDB.getBookingsByHotel(hotelName);
     }
     
-    public void addBooking(int id, Room room, Guest guest, Date arrivalDate, 
+    public void addBooking(Room room, Guest guest, Date arrivalDate, 
             Date leavingDate, int discount)
     {
         if (arrivalDate.before(new Date()))
@@ -61,6 +66,7 @@ public class BookingCtrl
         if (discount > totalPrice)
             throw new IllegalStateException("Discount can not be higher than"
                     + " total price.");
+        int id = idGenerator.getNextId();
         
         Booking booking = new Booking(id, room, guest, arrivalDate, leavingDate, 
                 discount);
@@ -94,9 +100,9 @@ public class BookingCtrl
         if (discount > totalPrice)
             throw new IllegalStateException("Discount can not be higher than"
                     + " total price.");
-        
-        Booking booking = new Booking(id, room, guest, arrivalDate, leavingDate, 
-                discount);
+        int bookingId = bookings.get(id).getId();
+        Booking booking = new Booking(bookingId, room, guest, arrivalDate, 
+                leavingDate, discount);
         bookingDB.updateBooking(booking, hotelName);
         bookings.set(id, booking);
     }
@@ -104,7 +110,15 @@ public class BookingCtrl
     public void removeBooking(int bookingId)
     {
         bookings.remove(bookingDB.getBooking(bookingId,hotelName));
+        idGenerator.removeId(bookingId);
         bookingDB.delete(bookingId, hotelName);
+    }
+    
+    public Booking[] getBookingsByRoom(Room room)
+    {
+        ArrayList<Booking> b = bookingDB.getBookingsByRoom(room.getRoomNr());
+        
+        return b.toArray(new Booking[b.size()]);
     }
     
     public Booking getBooking(int id)
