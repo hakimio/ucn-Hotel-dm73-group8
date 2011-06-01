@@ -1,7 +1,7 @@
 package hotel.controller;
 
 import java.util.ArrayList;
-import hotel.core.Hotel;
+import hotel.core.*;
 import hotel.DB.HotelDB;
 
 public class HotelCtrl
@@ -24,8 +24,40 @@ public class HotelCtrl
     
     public void removeHotel(String name)
     {
-        hotels.remove(hotelDB.getHotel(name));
+        Hotel hotel = hotelDB.getHotel(name);
+        BookingCtrl bookingCtrl = new BookingCtrl(name);
+        GuestCtrl guestCtrl = new GuestCtrl(name);
+        RoomCtrl roomCtrl = new RoomCtrl(name);
+        WorkerCtrl workerCtrl = new WorkerCtrl(name);
+        
+        for(int i = 0; i < bookingCtrl.getBookingCount(); i++)
+        {
+            Booking booking = bookingCtrl.getBooking(0);
+            bookingCtrl.removeBooking(booking.getId());
+        }
+        for (int i = 0; i < guestCtrl.getGuestCount(); i++)
+        {
+            Guest guest = guestCtrl.getGuestById(0);
+            guestCtrl.removeGuest(guest.getName());
+        }
+        for (int i = 0; i < roomCtrl.getRoomCount(); i++)
+        {
+            Room room = roomCtrl.getRoomById(0);
+            roomCtrl.removeRoom(room.getRoomNr());
+        }
+        for (int i = 0; i < workerCtrl.getWorkerCount(); i++)
+        {
+            Worker worker = workerCtrl.getWorkerById(0);
+            workerCtrl.removeWorker(worker.getName());
+        }
+        
+        hotels.remove(hotel);
         hotelDB.delete(name);
+    }
+    
+    public Hotel getHotelByName(String name)
+    {
+        return hotelDB.getHotel(name);
     }
     
     public void editHotel(int id, String name, String address)
@@ -39,6 +71,11 @@ public class HotelCtrl
     public Hotel getHotel(int id)
     {
         return hotels.get(id);
+    }
+    
+    public int getId(Hotel hotel)
+    {
+        return hotels.indexOf(hotel);
     }
     
     public int getHotelCount()
