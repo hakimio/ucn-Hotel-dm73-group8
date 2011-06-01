@@ -30,6 +30,11 @@ public class BookingDB
         return singleWhere("id = " + id + " AND hotelName='" + hotelName + "'");
     }
     
+    public ArrayList<Booking> getBookingsByRoom(int roomNr)
+    {
+        return where("roomNr=" + roomNr);
+    }
+    
     private Booking singleWhere(String wClause)
     {
         ResultSet results;
