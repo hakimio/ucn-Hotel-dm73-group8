@@ -4,6 +4,7 @@
  */
 package hotel;
 
+import hotel.gui.GUI;
 /**
  *
  * @author tomas
@@ -15,6 +16,6 @@ public class Main
      */
     public static void main(String[] args)
     {
-        // TODO code application logic here
+        GUI gui = GUI.getInstance();
     }
 }
