@@ -11,6 +11,7 @@ import hotel.core.Booking;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 public class RoomTab extends JPanel
 {
@@ -41,9 +42,8 @@ public class RoomTab extends JPanel
         String[] bookingColumns = new String[] {"#", "id", "Guest Name", 
             "Arrival Date", "Leaving Date", "Discount"};
         bookingTable = GUI.createTable(bookingColumns);
-        bookingTable.getColumnModel().getColumn(1).setResizable(false);
-        bookingTable.getColumnModel().getColumn(1).setMinWidth(0);
-        bookingTable.getColumnModel().getColumn(1).setWidth(0);
+        TableColumn columnToRemove = bookingTable.getColumnModel().getColumn(1); 
+        bookingTable.getColumnModel().removeColumn(columnToRemove);
         
         roomTable.getSelectionModel().addListSelectionListener(
         new ListSelectionListener() 
