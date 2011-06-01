@@ -1,7 +1,7 @@
 package hotel.DB;
 
 import java.sql.*;
-import hotel.core.*;
+import hotel.core.Hotel;
 import java.util.ArrayList;
 
 public class HotelDB
@@ -91,28 +91,7 @@ public class HotelDB
             String name = rs.getString("name");
             String address = rs.getString("address");
             Hotel hotel = new Hotel(name, address);
-            
-            RoomDB roomDB = new RoomDB();
-            ArrayList<Room> rooms = roomDB.getRoomsByHotel(name);
-            GuestDB guestDB = new GuestDB();
-            ArrayList<Guest> guests = guestDB.getGuestsByHotel(name);
-            WorkerDB workerDB = new WorkerDB();
-            ArrayList<Worker> workers = workerDB.getWorkersByHotel(name);
-            BookingDB bookingDB = new BookingDB();
-            ArrayList<Booking> bookings = bookingDB.getBookingsByHotel(name);
-            
-            for(int i = 0; i < rooms.size(); i++)
-                hotel.addRoom(rooms.get(i));
-            
-            for (int i = 0; i < guests.size(); i++)
-                hotel.addGuest(guests.get(i));
-            
-            for (int i = 0; i < workers.size(); i++)
-                hotel.addWorker(workers.get(i));
-            
-            for(int i = 0; i < bookings.size(); i++)
-                hotel.addBooking(bookings.get(i));
-            
+                        
             return hotel;
         }
         catch (SQLException e)

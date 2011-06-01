@@ -1,7 +1,6 @@
 package hotel.DB;
 
 import hotel.core.Guest;
-import hotel.core.Expense;
 import java.util.ArrayList;
 import java.sql.*;
 
@@ -96,11 +95,6 @@ public class GuestDB
         {
             String name = rs.getString("name");
             Guest guest = new Guest(name);
-            ExpenseDB expenseDB = new ExpenseDB();
-            ArrayList<Expense> expenses = expenseDB.getExpensesByGuest(name);
-            
-            for(int i = 0; i < expenses.size(); i++)
-                guest.addExpense(expenses.get(i));
             
             return guest;
         }
