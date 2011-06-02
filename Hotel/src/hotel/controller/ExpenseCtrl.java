@@ -33,6 +33,12 @@ public class ExpenseCtrl
         return expenses.get(id);
     }
     
+    public Expense[] getExpensesByGuest(String name)
+    {
+        ArrayList<Expense> localExpenses = expenseDB.getExpensesByGuest(name);
+        return localExpenses.toArray(new Expense[localExpenses.size()]);
+    }
+    
     public void removeExpense(String name)
     {
         expenses.remove(expenseDB.getExpense(name,guestName));
