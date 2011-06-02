@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import hotel.core.Hotel;
 import hotel.controller.HotelCtrl;
-import java.awt.Component;
 
 public class MyMenuBar extends JMenuBar
 {
@@ -100,6 +99,9 @@ public class MyMenuBar extends JMenuBar
             "Choose hotel", "Selection", JOptionPane.QUESTION_MESSAGE, 
             null, hotelNames, hotelCtrl.getHotel(0).getName());
         
+        if (hotelToSelect == null)
+            return;
+        
         try
         {
             GUI.selectedHotel = hotelCtrl.getHotelByName(hotelToSelect);
@@ -127,6 +129,12 @@ public class MyMenuBar extends JMenuBar
             {
                 try
                 {
+                    if (hotelCtrl.getHotelByName(name.getText()) != null)
+                    {
+                        GUI.showError("Hotel with the specified name already"
+                                + " exists.", "Error", myMenuBar);
+                        return;
+                    }
                     hotelCtrl.addHotel(name.getText(), address.getText());
                 }
                 catch (Exception exc)
@@ -197,6 +205,8 @@ public class MyMenuBar extends JMenuBar
         String hotelToRemove = (String)JOptionPane.showInputDialog(this, 
             "Choose hotel to remove", "Removal", JOptionPane.QUESTION_MESSAGE, 
             null, hotelNames, hotelCtrl.getHotel(0).getName());
+        if (hotelToRemove == null)
+            return;
         
         try
         {
