@@ -25,6 +25,7 @@ public class GUI extends JFrame
         
         JTabbedPane jTabbedPane = new JTabbedPane();
         jTabbedPane.add("Rooms", new RoomTab());
+        jTabbedPane.add("Bookings", new BookingTab());
         
         pack();
         setVisible(true);

@@ -39,11 +39,13 @@ public class RoomTab extends JPanel
             String hotelName = GUI.selectedHotel.getName();
             roomCtrl = new RoomCtrl(hotelName);
             bookingCtrl = new BookingCtrl(hotelName);
+            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
         }
         else
         {
             roomCtrl = null;
             bookingCtrl = null;
+            guestCtrl = null;
         }
         
         roomLabels = new JLabel[]{new JLabel("Room Nr"), new JLabel("Size"), 
@@ -55,8 +57,6 @@ public class RoomTab extends JPanel
             new JLabel("Arrival Date"), new JLabel("Leaving Date"), 
             new JLabel("Discount")};
         bookingInputs = new JComponent[4];
-        if (GUI.selectedHotel != null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
         
         String[] roomColumns = new String[] {"#", "Nr", "Size", "Sq Meter cost", 
             "bedrooms"};
@@ -204,7 +204,7 @@ public class RoomTab extends JPanel
         
         JPanel bookingPanel = new JPanel();
         bookingPanel.setLayout(new BorderLayout());
-        bookingPanel.add(bookingPanel, BorderLayout.PAGE_START);
+        bookingPanel.add(bookingToolBar, BorderLayout.PAGE_START);
         bookingPanel.add(bookingScrollPane);
         
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, 
@@ -494,7 +494,7 @@ public class RoomTab extends JPanel
         for(int i = 0; i < roomCtrl.getRoomCount(); i++)
         {
             Room room = roomCtrl.getRoomById(i);
-            Object[] roomData = {i, room.getRoomNr(), room.getSqMeters(),
+            Object[] roomData = {i+1, room.getRoomNr(), room.getSqMeters(),
                 room.getCost(), room.getNrOfBedrooms()};
             model.addRow(roomData);
         }
@@ -512,7 +512,7 @@ public class RoomTab extends JPanel
         for (int i = 0; i < bookings.length; i++)
         {
             Booking booking = bookings[i];
-            Object[] bookingData = {i, booking.getId(), 
+            Object[] bookingData = {i+1, booking.getId(), 
                 booking.getGuest().getName(), booking.getArrivalDate(), 
                 booking.getLeavingDate(), booking.getDiscount()};
             model.addRow(bookingData);
