@@ -33,6 +33,11 @@ public class GuestCtrl
         return guests.get(id);
     }
     
+    public Guest getGuestByName(String name)
+    {
+        return guestDB.getGuest(name, hotelName);
+    }
+    
     public void addGuest(String name)
     {
         Guest guest = new Guest(name);

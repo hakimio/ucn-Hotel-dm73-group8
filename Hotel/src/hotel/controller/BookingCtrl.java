@@ -126,6 +126,11 @@ public class BookingCtrl
         return bookings.get(id);
     }
     
+    public Booking getBookingByBookingId(int bookingId)
+    {
+        return bookingDB.getBooking(bookingId, hotelName);
+    }
+    
     public int getBookingCount()
     {
         return bookings.size();

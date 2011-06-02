@@ -57,6 +57,11 @@ public class RoomCtrl
         return rooms.get(id);
     }
     
+    public Room getRoomByRoomNr(int roomNr)
+    {
+        return roomDB.getRoom(roomNr, hotelName);
+    }
+    
     public void editRoom(int id, int roomNr, int meterCost, int sqMeters, 
             int nrOfBedrooms)
     {
