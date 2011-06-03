@@ -25,16 +25,15 @@ public class GuestTab extends JPanel
     
     public GuestTab()
     {
+        expenseCtrl = null;
         if (GUI.selectedHotel != null)
         {
             String hotelName = GUI.selectedHotel.getName();
-            expenseCtrl = new ExpenseCtrl(hotelName);
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(hotelName);
         }
         else
         {
             guestCtrl = null;
-            expenseCtrl = null;
         }
         
         expenseLabels = new JLabel[]{new JLabel("Name"), new JLabel("Price")};
@@ -235,31 +234,180 @@ public class GuestTab extends JPanel
     
     private void addGuestCB()
     {
-        
+        if (guestCtrl == null)
+            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+
+        String guestName = JOptionPane.showInputDialog(guestTab, "Name");
+
+        if (guestName != null)
+        {
+            try
+            {
+                guestCtrl.addGuest(guestName);
+            }
+            catch (Exception e)
+            {
+                GUI.showError(e.getMessage(), "Error", this);
+                return;
+            }
+            updateGuestTable();
+        }
     }
     
     private void editGuestCB(int id)
     {
-        
+        if (guestCtrl == null)
+            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+
+        Guest guest = guestCtrl.getGuestById(id);
+        String guestName = JOptionPane.showInputDialog(guestTab, "Name", 
+                guest.getName());
+
+        if (guestName != null)
+        {
+            try
+            {
+                guestCtrl.editGuest(id, guestName);
+            }
+            catch (Exception e)
+            {
+                GUI.showError(e.getMessage(), "Error", this);
+                return;
+            }
+            updateGuestTable();
+        }
     }
     
     private void removeGuestCB(int id)
     {
-        
+        String guestName = guestCtrl.getGuestById(id).getName();
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to remove \""+ guestName +"\" ?",
+                "Removal",
+                JOptionPane.YES_NO_OPTION);
+
+        if (choice == 0)
+        {
+            try
+            {
+                guestCtrl.removeGuest(guestName);
+            }
+            catch (Exception e)
+            {
+                GUI.showError(e.getMessage(), "Error", this);
+            }
+            
+            updateGuestTable();
+        }
     }
     
-    private void addExpenseCB(int guestId)
+    private void addExpenseCB(final int guestId)
     {
+        if (guestCtrl == null)
+            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+        String guestName = guestCtrl.getGuestById(guestId).getName();
+        expenseCtrl = new ExpenseCtrl(guestName);
         
+        final JDialog addDialog = GUI.dialog("Add Expense", expenseLabels, 
+                expenseInputs);
+        JPanel myPanel = (JPanel)addDialog.getContentPane().getComponent(0);
+        
+        final JTextField expenseName = ((JTextField)myPanel.getComponent(1));
+        final JSpinner price = ((JSpinner)myPanel.getComponent(3));
+        
+        JButton okButton = ((JButton)myPanel.getComponent(4));
+        okButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String expenseNameS = expenseName.getText();
+                double priceI = (Double)price.getValue();
+                try
+                {
+                    expenseCtrl.addExpense(expenseNameS, priceI);
+                }
+                catch (Exception exc)
+                {
+                    GUI.showError(exc.getMessage(), "Error", guestTab);
+                    return;
+                }
+                addDialog.setVisible(false);
+                updateGuestTable();
+                updateExpenseTable(guestId);
+            }
+        });
+        addDialog.setVisible(true);
     }
     
-    private void editExpenseCB(int expenseId, int guestId)
+    private void editExpenseCB(final int expenseId, final int guestId)
     {
+        if (guestCtrl == null)
+            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+        String guestName = guestCtrl.getGuestById(guestId).getName();
+        expenseCtrl = new ExpenseCtrl(guestName);
         
+        Expense expense = expenseCtrl.getExpenseById(expenseId);
+        
+        final JDialog editDialog = GUI.dialog("Add Expense", expenseLabels, 
+                expenseInputs);
+        JPanel myPanel = (JPanel)editDialog.getContentPane().getComponent(0);
+        
+        final JTextField expenseName = ((JTextField)myPanel.getComponent(1));
+        expenseName.setText(expense.getName());
+        final JSpinner price = ((JSpinner)myPanel.getComponent(3));
+        price.setValue(expense.getPrice());
+        
+        JButton okButton = ((JButton)myPanel.getComponent(4));
+        okButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String expenseNameS = expenseName.getText();
+                double priceI = (Double)price.getValue();
+                try
+                {
+                    expenseCtrl.editExpense(expenseId, expenseNameS, priceI);
+                }
+                catch (Exception exc)
+                {
+                    GUI.showError(exc.getMessage(), "Error", guestTab);
+                    return;
+                }
+                editDialog.setVisible(false);
+                updateGuestTable();
+                updateExpenseTable(guestId);
+            }
+        });
+        editDialog.setVisible(true);
     }
     
     private void removeExpenseCB(int expenseId, int guestId)
     {
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to remove selected expense?", "Removal",
+                JOptionPane.YES_NO_OPTION);
         
+        String guestName = guestCtrl.getGuestById(guestId).getName();
+        expenseCtrl = new ExpenseCtrl(guestName);
+        
+        if (choice == 0)
+        {
+            try
+            {
+                Expense expense = expenseCtrl.getExpenseById(expenseId);
+                expenseCtrl.removeExpense(expense.getName());
+            }
+            catch (Exception e)
+            {
+                GUI.showError(e.getMessage(), "Error", this);
+                return;
+            }
+            updateGuestTable();
+            updateExpenseTable(guestId);
+        }
     }
 }
