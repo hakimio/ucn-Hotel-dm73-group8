@@ -6,6 +6,7 @@ import hotel.core.Booking;
 import hotel.core.Guest;
 import hotel.core.Room;
 import hotel.DB.BookingDB;
+import hotel.utils.DateUtils;
 import hotel.utils.IdGenerator;
 
 public class BookingCtrl
@@ -39,21 +40,24 @@ public class BookingCtrl
     public void addBooking(Room room, Guest guest, Date arrivalDate, 
             Date leavingDate, int discount)
     {
-        if (arrivalDate.before(new Date()))
+        if (arrivalDate.before(DateUtils.getToday()))
             throw new IllegalStateException("Arrival date can not be in "
                     + "the past.");
+        ArrayList<Booking> roomBookings = bookingDB.
+                getBookingsByRoom(room.getRoomNr());
         
-        for (int i = 0; i < bookings.size(); i++)
+        
+        for (int i = 0; i < roomBookings.size(); i++)
         {
-            Booking booking = bookings.get(i);
+            Booking booking = roomBookings.get(i);
             
-            if (arrivalDate.after(booking.getArrivalDate()) && 
-                    arrivalDate.before(booking.getLeavingDate()))
+            if (arrivalDate.compareTo(booking.getArrivalDate()) >= 0 && 
+                    arrivalDate.compareTo(booking.getLeavingDate()) <= 0)
                 throw new IllegalStateException("The room will not be "
                         + "available at specified arrival date.");
             
-            if(leavingDate.after(booking.getArrivalDate()) && 
-                    leavingDate.before(booking.getLeavingDate()))
+            if(leavingDate.compareTo(booking.getArrivalDate()) >= 0 && 
+                    leavingDate.compareTo(booking.getLeavingDate()) <= 0)
                 throw new IllegalStateException("There are some other guests "
                         + "who will be staying at the specified period.");
         }
@@ -77,7 +81,7 @@ public class BookingCtrl
     public void addBooking(Guest guest, int nrOfGuests, Date arrivalDate, 
             Date leavingDate, int discount)
     {
-        if (arrivalDate.before(new Date()))
+        if (arrivalDate.before(DateUtils.getToday()))
             throw new IllegalStateException("Arrival date can not be in "
                     + "the past.");
         
@@ -88,7 +92,7 @@ public class BookingCtrl
         for(int i = 0; i < roomCtrl.getRoomCount(); i++)
         {
             Room room = roomCtrl.getRoomById(i);
-            if (room.getNrOfBedrooms() == nrOfGuests)
+            if (room.getNrOfBedrooms() >= nrOfGuests)
                 roomsToCheck.add(room);
         }
         
@@ -104,7 +108,8 @@ public class BookingCtrl
         
         if (foundRoom == null)
             throw new IllegalStateException("There are no available rooms that"
-                    + " can hold the specified number of guests.");
+                    + " can hold the specified number of guests at the "
+                    + "specified time interval.");
         
         double totalPrice = foundRoom.getCost();
         ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName());
@@ -175,25 +180,26 @@ public class BookingCtrl
         {
             Booking booking = bookingsToCheck[i];
             
-            if (arrivalDate.after(booking.getArrivalDate()) && 
-                    arrivalDate.before(booking.getLeavingDate()))
+            if (arrivalDate.compareTo(booking.getArrivalDate()) >= 0 && 
+                    arrivalDate.compareTo(booking.getLeavingDate()) <= 0)
                 return false;
             
-            if(leavingDate.after(booking.getArrivalDate()) && 
-                    leavingDate.before(booking.getLeavingDate()))
+            if(leavingDate.compareTo(booking.getArrivalDate()) >= 0 && 
+                    leavingDate.compareTo(booking.getLeavingDate()) <= 0)
                 return false;
         }
         
         return true;
     }
     
-    public void editBooking(int id, Room room, Guest guest, Date arrivalDate, 
+    public void editBooking(int bookingId, Room room, Guest guest, Date arrivalDate, 
             Date leavingDate, int discount)
     {
         for (int i = 0; i < bookings.size(); i++)
         {
             Booking booking = bookings.get(i);
-            
+            if (booking.getId() == bookingId)
+                continue;
             if (arrivalDate.after(booking.getArrivalDate()) && 
                     arrivalDate.before(booking.getLeavingDate()))
                 throw new IllegalStateException("The room will not be "
@@ -213,16 +219,30 @@ public class BookingCtrl
         if (discount > totalPrice)
             throw new IllegalStateException("Discount can not be higher than"
                     + " total price.");
-        int bookingId = bookings.get(id).getId();
+        //int bookingId = bookings.get(id).getId();
         Booking booking = new Booking(bookingId, room, guest, arrivalDate, 
                 leavingDate, discount);
         bookingDB.updateBooking(booking, hotelName);
-        bookings.set(id, booking);
+        for (int i = 0; i < bookings.size(); i++)
+        {
+            if (bookings.get(i).getId() == bookingId)
+            {
+                bookings.set(i, booking);
+                break;
+            }
+        }
     }
     
     public void removeBooking(int bookingId)
     {
-        bookings.remove(bookingDB.getBooking(bookingId,hotelName));
+        for (int i = 0; i < bookings.size(); i++)
+        {
+            if (bookings.get(i).getId() == bookingId)
+            {
+                bookings.remove(i);
+                break;
+            }
+        }
         idGenerator.removeId(bookingId);
         bookingDB.delete(bookingId, hotelName);
     }
