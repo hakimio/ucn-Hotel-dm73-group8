@@ -66,6 +66,8 @@ public class GuestTab extends JPanel
             @Override
             public void valueChanged(ListSelectionEvent e)
             {
+                if (e.getValueIsAdjusting())
+                    return;
                 if (guestCtrl == null)
                     return;
                 

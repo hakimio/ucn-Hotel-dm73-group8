@@ -93,6 +93,8 @@ public class RoomTab extends JPanel
             @Override
             public void valueChanged(ListSelectionEvent e)
             {
+                if (e.getValueIsAdjusting())
+                    return;
                 if (bookingCtrl == null)
                     return;
                 if (roomTable.getSelectedRowCount() < 1 && 
