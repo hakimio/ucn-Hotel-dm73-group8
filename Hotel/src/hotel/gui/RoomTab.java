@@ -21,6 +21,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class RoomTab extends JPanel
 {
@@ -69,6 +71,9 @@ public class RoomTab extends JPanel
         roomTable.getColumnModel().getColumn(0).setMaxWidth(30);
         roomTable.getColumnModel().getColumn(1).setMaxWidth(30);
         updateRoomTable();
+        TableRowSorter<TableModel> roomSorter = new TableRowSorter<TableModel>();
+        roomSorter.setModel(roomTable.getModel());
+        roomTable.setRowSorter(roomSorter);
         
         String[] bookingColumns = new String[] {"#", "id", "Guest Name", 
             "Arrival Date", "Leaving Date", "Discount"};
@@ -78,7 +83,10 @@ public class RoomTab extends JPanel
         idColumn.setMaxWidth(0);
         idColumn.setMinWidth(0);
         idColumn.setPreferredWidth(0);
-                
+        TableRowSorter<TableModel> bookingSorter = new TableRowSorter<TableModel>();
+        bookingSorter.setModel(bookingTable.getModel());
+        bookingTable.setRowSorter(bookingSorter);
+        
         roomTable.getSelectionModel().addListSelectionListener(
         new ListSelectionListener() 
         {

@@ -17,6 +17,8 @@ import java.util.Date;
 import java.util.Locale;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class BookingTab extends JPanel
 {
@@ -56,6 +58,9 @@ public class BookingTab extends JPanel
         idColumn.setMinWidth(0);
         idColumn.setPreferredWidth(0);
         updateTable();
+        TableRowSorter<TableModel> bookingSorter = new TableRowSorter<TableModel>();
+        bookingSorter.setModel(bookingTable.getModel());
+        bookingTable.setRowSorter(bookingSorter);
         
         JScrollPane bookingScrollPane = new JScrollPane(bookingTable);
         

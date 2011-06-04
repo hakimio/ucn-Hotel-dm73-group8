@@ -12,6 +12,8 @@ import hotel.core.Expense;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class GuestTab extends JPanel
 {
@@ -50,7 +52,10 @@ public class GuestTab extends JPanel
         String[] guestColumns = new String[] {"#", "Name"};
         guestTable = GUI.createTable(guestColumns);
         guestTable.getColumnModel().getColumn(0).setMaxWidth(30);
-        updateGuestTable();    
+        updateGuestTable();
+        TableRowSorter<TableModel> guestSorter = new TableRowSorter<TableModel>();
+        guestSorter.setModel(guestTable.getModel());
+        guestTable.setRowSorter(guestSorter);
         
         String[] expenseColumns = new String[] {"#", "Name", "Price"};
         expenseTable = GUI.createTable(expenseColumns);
@@ -77,6 +82,10 @@ public class GuestTab extends JPanel
                 updateExpenseTable(selected);
             }
         });
+        
+        TableRowSorter<TableModel> expenseSorter = new TableRowSorter<TableModel>();
+        expenseSorter.setModel(expenseTable.getModel());
+        expenseTable.setRowSorter(expenseSorter);
         
         JScrollPane guestScrollPane = new JScrollPane(guestTable);
         JScrollPane expenseScrollPane = new JScrollPane(expenseTable);
