@@ -194,7 +194,7 @@ public class ExpenseDB
         int rc = -1;
         String query = "Update expenses SET "+
                 "name ='" + expense.getName() + "', "+
-                "price ='" + expense.getPrice() + "', "+
+                "price ='" + expense.getPrice() + "' "+
                 "WHERE name='" + oldName + "' AND guestName='"+guestName+"'";
         try
         {

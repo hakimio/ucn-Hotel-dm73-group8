@@ -162,7 +162,7 @@ public class HotelDB
         int rc = -1;
         String query = "Update hotels SET "+
                 "name ='" + hotel.getName() + "', "+
-                "address ='" + hotel.getAddress() + "', "+
+                "address ='" + hotel.getAddress() + "' "+
                 "WHERE name='" + oldName + "'";
         try
         {

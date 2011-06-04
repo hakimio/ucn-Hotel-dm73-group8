@@ -202,7 +202,7 @@ public class RoomDB
                 "roomNr ='" + room.getRoomNr() + "', " +
                 "meterCost ='" + room.getMeterCost() + "', " +
                 "sqMeters ='" + room.getSqMeters() + "', " +
-                "nrOfBedrooms ='" + room.getNrOfBedrooms() + "', "+
+                "nrOfBedrooms ='" + room.getNrOfBedrooms() + "' "+
                 "WHERE roomNr="+ oldRoomNr + " AND hotelName ='"+hotelName+"'";
         try
         {

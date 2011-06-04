@@ -192,7 +192,7 @@ public class GuestDB
     {
         int rc = -1;
         String query = "Update guests SET "+
-                "name ='" + guest.getName() + "', "+
+                "name ='" + guest.getName() + "' "+
                 "WHERE name='" + oldName + "' AND hotelName='"+hotelName+"'";
         try
         {
