@@ -103,7 +103,6 @@ public class BookingDB
             int id = rs.getInt("id");
             int roomNr = rs.getInt("roomNr");
             String guestName = rs.getString("guestName");
-            String name = rs.getString("name");
             int discount = rs.getInt("discount");
             Date arrivalDate = rs.getDate("arrivalDate");
             Date leavingDate = rs.getDate("leavingDate");
@@ -131,7 +130,7 @@ public class BookingDB
     {
         //row count
         int rc = -1;
-        String query = "DELETE FROM guests WHERE id=" + id + " AND "
+        String query = "DELETE FROM bookings WHERE id=" + id + " AND "
                 + "hotelName='" + hotelName + "'";
         try
         {
@@ -178,13 +177,15 @@ public class BookingDB
     public int insertBooking(Booking booking, String hotelName)
     {
         int rc = -1;
+        Date arrivalDate = new Date(booking.getArrivalDate().getTime());
+        Date leavingDate = new Date(booking.getLeavingDate().getTime());
         String query = "INSERT INTO bookings(id, roomNr, guestName, "
                 + "arrivalDate, leavingDate, discount, hotelName) VALUES('"
                 + booking.getId() + "','" 
                 + booking.getRoom().getRoomNr() + "','" 
                 + booking.getGuest().getName() + "','" 
-                + booking.getArrivalDate() + "','" 
-                + booking.getLeavingDate() + "','" 
+                + arrivalDate + "','" 
+                + leavingDate + "','" 
                 + booking.getDiscount() + "','" 
                 + hotelName + "')";
         try
@@ -226,8 +227,8 @@ public class BookingDB
                 "guestName ='" + booking.getGuest().getName() + "', "+
                 "arrivalDate ='" + arrivalDate + "', "+
                 "leavingDate ='" + leavingDate + "', "+
-                "discount ='" + booking.getDiscount() + "', "+
-                "WHERE id='" + booking.getId() + "' AND hotelName='" + 
+                "discount ='" + booking.getDiscount() + "' "+
+                "WHERE id=" + booking.getId() + " AND hotelName='" + 
                 hotelName + "'";
         try
         {
