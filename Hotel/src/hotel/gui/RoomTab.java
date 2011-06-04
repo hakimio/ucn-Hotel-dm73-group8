@@ -71,7 +71,7 @@ public class RoomTab extends JPanel
         roomTable.getColumnModel().getColumn(0).setMaxWidth(30);
         roomTable.getColumnModel().getColumn(1).setMaxWidth(30);
         updateRoomTable();
-        TableRowSorter<TableModel> roomSorter = new TableRowSorter<TableModel>();
+        final TableRowSorter<TableModel> roomSorter = new TableRowSorter<TableModel>();
         roomSorter.setModel(roomTable.getModel());
         roomTable.setRowSorter(roomSorter);
         
@@ -83,7 +83,7 @@ public class RoomTab extends JPanel
         idColumn.setMaxWidth(0);
         idColumn.setMinWidth(0);
         idColumn.setPreferredWidth(0);
-        TableRowSorter<TableModel> bookingSorter = new TableRowSorter<TableModel>();
+        final TableRowSorter<TableModel> bookingSorter = new TableRowSorter<TableModel>();
         bookingSorter.setModel(bookingTable.getModel());
         bookingTable.setRowSorter(bookingSorter);
         
@@ -107,7 +107,8 @@ public class RoomTab extends JPanel
                     updateBookingTable(-1);
                     return;
                 }
-                updateBookingTable(selected);
+                updateBookingTable((Integer)roomTable.
+                        getValueAt(selected, 0) - 1);
             }
         });
         
@@ -161,6 +162,34 @@ public class RoomTab extends JPanel
         roomToolBar.add(AddRoom);
         roomToolBar.add(editRoom);
         roomToolBar.add(removeRoom);
+        
+        String[] fieldNames = new String[] {"Room Nr", "Size", "Price", 
+            "Bedrooms"};
+        final JComboBox filterBox = new JComboBox(fieldNames);
+        final JTextField filterField = new JTextField();
+        filterField.addKeyListener(new KeyListener() {
+
+            @Override public void keyTyped(KeyEvent e) {}
+            @Override public void keyPressed(KeyEvent e) {}
+            
+            @Override 
+            public void keyReleased(KeyEvent e) 
+            {
+                String text = filterField.getText();
+                int i = filterBox.getSelectedIndex() + 1;
+                if (text.isEmpty())
+                    roomSorter.setRowFilter(null);
+                else
+                    roomSorter.setRowFilter(RowFilter.regexFilter(text, i));
+            }
+        });
+
+        roomToolBar.addSeparator();
+        roomToolBar.add(new JLabel("Filter by   "));
+        roomToolBar.add(filterBox);
+        roomToolBar.addSeparator();
+        roomToolBar.add(filterField);
+        roomToolBar.addSeparator();
         
         JButton addBooking = new JButton("Add");
         addBooking.addActionListener(new ActionListener() {
@@ -222,6 +251,34 @@ public class RoomTab extends JPanel
         bookingToolBar.add(addBooking);
         bookingToolBar.add(editBooking);
         bookingToolBar.add(removeBooking);
+        
+        fieldNames = new String[] {"Guest Name", "Arrival Date", "Leaving Date", 
+            "Discount"};
+        final JComboBox bookingfilterBox = new JComboBox(fieldNames);
+        final JTextField bookingfilterField = new JTextField();
+        bookingfilterField.addKeyListener(new KeyListener() {
+
+            @Override public void keyTyped(KeyEvent e) {}
+            @Override public void keyPressed(KeyEvent e) {}
+            
+            @Override 
+            public void keyReleased(KeyEvent e) 
+            {
+                String text = bookingfilterField.getText();
+                int i = bookingfilterBox.getSelectedIndex() + 2;
+                if (text.isEmpty())
+                    bookingSorter.setRowFilter(null);
+                else
+                    bookingSorter.setRowFilter(RowFilter.regexFilter(text, i));
+            }
+        });
+
+        bookingToolBar.addSeparator();
+        bookingToolBar.add(new JLabel("Filter by   "));
+        bookingToolBar.add(bookingfilterBox);
+        bookingToolBar.addSeparator();
+        bookingToolBar.add(bookingfilterField);
+        bookingToolBar.addSeparator();
         
         JPanel roomPanel = new JPanel();
         roomPanel.setLayout(new BorderLayout());
@@ -497,6 +554,7 @@ public class RoomTab extends JPanel
                 
                 editDialog.setVisible(false);
                 updateRoomTable();
+                roomTable.setRowSelectionInterval(id, id);
                 GUI.updateBookings();
             }
         });
@@ -530,7 +588,7 @@ public class RoomTab extends JPanel
         while(model.getRowCount() > 0)
             model.removeRow(0);
         
-        if (roomCtrl == null)
+        if (roomCtrl == null || roomCtrl.getRoomCount() == 0)
             return;
         
         for(int i = 0; i < roomCtrl.getRoomCount(); i++)

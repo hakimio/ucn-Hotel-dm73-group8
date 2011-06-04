@@ -58,7 +58,7 @@ public class BookingTab extends JPanel
         idColumn.setMinWidth(0);
         idColumn.setPreferredWidth(0);
         updateTable();
-        TableRowSorter<TableModel> bookingSorter = new TableRowSorter<TableModel>();
+        final TableRowSorter<TableModel> bookingSorter = new TableRowSorter<TableModel>();
         bookingSorter.setModel(bookingTable.getModel());
         bookingTable.setRowSorter(bookingSorter);
         
@@ -116,6 +116,34 @@ public class BookingTab extends JPanel
         bookingToolBar.add(addBooking);
         bookingToolBar.add(editBooking);
         bookingToolBar.add(removeBooking);
+        
+        String[] fieldNames = new String[] {"Guest Name", "Room Nr", 
+            "Arrival Date", "Leaving Date", "Discount"};
+        final JComboBox bookingfilterBox = new JComboBox(fieldNames);
+        final JTextField bookingfilterField = new JTextField();
+        bookingfilterField.addKeyListener(new KeyListener() {
+
+            @Override public void keyTyped(KeyEvent e) {}
+            @Override public void keyPressed(KeyEvent e) {}
+            
+            @Override 
+            public void keyReleased(KeyEvent e) 
+            {
+                String text = bookingfilterField.getText();
+                int i = bookingfilterBox.getSelectedIndex() + 2;
+                if (text.isEmpty())
+                    bookingSorter.setRowFilter(null);
+                else
+                    bookingSorter.setRowFilter(RowFilter.regexFilter(text, i));
+            }
+        });
+
+        bookingToolBar.addSeparator();
+        bookingToolBar.add(new JLabel("Filter by   "));
+        bookingToolBar.add(bookingfilterBox);
+        bookingToolBar.addSeparator();
+        bookingToolBar.add(bookingfilterField);
+        bookingToolBar.addSeparator();
         
         JPanel bookingPanel = new JPanel();
         bookingPanel.setLayout(new BorderLayout());

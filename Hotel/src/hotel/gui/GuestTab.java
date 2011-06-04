@@ -53,7 +53,7 @@ public class GuestTab extends JPanel
         guestTable = GUI.createTable(guestColumns);
         guestTable.getColumnModel().getColumn(0).setMaxWidth(30);
         updateGuestTable();
-        TableRowSorter<TableModel> guestSorter = new TableRowSorter<TableModel>();
+        final TableRowSorter<TableModel> guestSorter = new TableRowSorter<TableModel>();
         guestSorter.setModel(guestTable.getModel());
         guestTable.setRowSorter(guestSorter);
         
@@ -78,12 +78,13 @@ public class GuestTab extends JPanel
                     selected = guestTable.getSelectedRow();
                 else
                     return;
-                
-                updateExpenseTable(selected);
+
+                updateExpenseTable((Integer)guestTable.
+                        getValueAt(selected, 0) - 1);
             }
         });
         
-        TableRowSorter<TableModel> expenseSorter = new TableRowSorter<TableModel>();
+        final TableRowSorter<TableModel> expenseSorter = new TableRowSorter<TableModel>();
         expenseSorter.setModel(expenseTable.getModel());
         expenseTable.setRowSorter(expenseSorter);
         
@@ -139,6 +140,29 @@ public class GuestTab extends JPanel
         guestToolBar.add(addGuest);
         guestToolBar.add(editGuest);
         guestToolBar.add(removeGuest);
+        
+        final JTextField filterField = new JTextField();
+        filterField.addKeyListener(new KeyListener() {
+
+            @Override public void keyTyped(KeyEvent e) {}
+            @Override public void keyPressed(KeyEvent e) {}
+            
+            @Override 
+            public void keyReleased(KeyEvent e) 
+            {
+                String text = filterField.getText();
+                if (text.isEmpty())
+                    guestSorter.setRowFilter(null);
+                else
+                    guestSorter.setRowFilter(RowFilter.regexFilter(text, 1));
+            }
+        });
+
+        guestToolBar.addSeparator();
+        guestToolBar.add(new JLabel("Filter   "));
+        guestToolBar.addSeparator();
+        guestToolBar.add(filterField);
+        guestToolBar.addSeparator();
         
         JButton addExpense = new JButton("Add");
         addExpense.addActionListener(new ActionListener() {
@@ -202,6 +226,33 @@ public class GuestTab extends JPanel
         expenseToolBar.add(editExpense);
         expenseToolBar.add(removeExpense);
         
+        String[] fieldNames = new String[] {"Expense Name", "Price"};
+        final JComboBox expensefilterBox = new JComboBox(fieldNames);
+        final JTextField expensefilterField = new JTextField();
+        expensefilterField.addKeyListener(new KeyListener() {
+
+            @Override public void keyTyped(KeyEvent e) {}
+            @Override public void keyPressed(KeyEvent e) {}
+            
+            @Override 
+            public void keyReleased(KeyEvent e) 
+            {
+                String text = expensefilterField.getText();
+                int i = expensefilterBox.getSelectedIndex() + 1;
+                if (text.isEmpty())
+                    expenseSorter.setRowFilter(null);
+                else
+                    expenseSorter.setRowFilter(RowFilter.regexFilter(text, i));
+            }
+        });
+
+        expenseToolBar.addSeparator();
+        expenseToolBar.add(new JLabel("Filter by   "));
+        expenseToolBar.add(expensefilterBox);
+        expenseToolBar.addSeparator();
+        expenseToolBar.add(expensefilterField);
+        expenseToolBar.addSeparator();
+        
         JPanel guestPanel = new JPanel();
         guestPanel.setLayout(new BorderLayout());
         guestPanel.add(guestToolBar, BorderLayout.PAGE_START);
@@ -242,7 +293,7 @@ public class GuestTab extends JPanel
         while(model.getRowCount() > 0)
             model.removeRow(0);
         
-        if (guestCtrl == null)
+        if (guestCtrl == null || guestCtrl.getGuestCount() == 0)
             return;
         
         for(int i = 0; i < guestCtrl.getGuestCount(); i++)
@@ -255,12 +306,15 @@ public class GuestTab extends JPanel
     
     private void updateExpenseTable(int selectedGuest)
     {
-        Guest guest = guestCtrl.getGuestById(selectedGuest);
-        Expense[] expenses = ExpenseCtrl.getExpensesByGuest(guest.getName());
-        
         DefaultTableModel model = (DefaultTableModel) expenseTable.getModel();
         while(model.getRowCount() > 0)
             model.removeRow(0);
+        
+        Guest guest = guestCtrl.getGuestById(selectedGuest);
+        if (guest == null)
+            return;
+        
+        Expense[] expenses = ExpenseCtrl.getExpensesByGuest(guest.getName());
         
         for (int i = 0; i < expenses.length; i++)
         {
