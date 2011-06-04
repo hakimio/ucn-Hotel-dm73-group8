@@ -2,7 +2,6 @@ package hotel.controller;
 
 import java.util.ArrayList;
 import hotel.core.Guest;
-import hotel.core.Expense;
 import hotel.DB.GuestDB;
 
 public class GuestCtrl
@@ -31,7 +30,17 @@ public class GuestCtrl
     
     public Guest getGuestById(int id)
     {
-        return guests.get(id);
+        Guest guest;
+        try
+        {
+            guest = guests.get(id);
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            return null;
+        }
+        
+        return guest;
     }
     
     public Guest getGuestByName(String name)
