@@ -11,10 +11,12 @@ public class MyMenuBar extends JMenuBar
     private HotelCtrl hotelCtrl;
     private JLabel[] labals;
     private JTextField[] inputs;
+    //private GUI gui;
     
     public MyMenuBar()
     {
         hotelCtrl = new HotelCtrl();
+        //gui = GUI.getInstance();
         
         labals = new JLabel[] {new JLabel("Name"), 
             new JLabel("Address")};
@@ -86,25 +88,27 @@ public class MyMenuBar extends JMenuBar
     
     private void selectHotel()
     {
-        if(hotelCtrl.getHotelCount() == 0)
+        Hotel[] hotels = hotelCtrl.getHotels();
+        if(hotels.length == 0)
         {
             GUI.showError("No hotels were added.", "Error", this);
             return;
         }
-        String[] hotelNames = new String[hotelCtrl.getHotelCount()];
+        String[] hotelNames = new String[hotels.length];
         for (int i = 0; i < hotelNames.length; i++)
-            hotelNames[i] = hotelCtrl.getHotel(i).getName();
+            hotelNames[i] = hotels[i].getName();
         
         String hotelToSelect = (String)JOptionPane.showInputDialog(this, 
             "Choose hotel", "Selection", JOptionPane.QUESTION_MESSAGE, 
-            null, hotelNames, hotelCtrl.getHotel(0).getName());
+            null, hotelNames, hotels[0].getName());
         
         if (hotelToSelect == null)
             return;
         
         try
         {
-            GUI.selectedHotel = hotelCtrl.getHotelByName(hotelToSelect);
+            Hotel hotel = hotelCtrl.getHotelByName(hotelToSelect);
+            GUI.setHotel(hotel);
         }
         catch (Exception e)
         {
@@ -129,12 +133,6 @@ public class MyMenuBar extends JMenuBar
             {
                 try
                 {
-                    if (hotelCtrl.getHotelByName(name.getText()) != null)
-                    {
-                        GUI.showError("Hotel with the specified name already"
-                                + " exists.", "Error", myMenuBar);
-                        return;
-                    }
                     hotelCtrl.addHotel(name.getText(), address.getText());
                 }
                 catch (Exception exc)
@@ -151,7 +149,7 @@ public class MyMenuBar extends JMenuBar
     }
     private void editHotel()
     {
-        if (GUI.selectedHotel == null)
+        if (GUI.getHotel() == null)
         {
             GUI.showError("Hotel must be selected", "Error", this);
             return;
@@ -161,7 +159,7 @@ public class MyMenuBar extends JMenuBar
         JPanel myPanel = (JPanel)editDialog.getContentPane().getComponent(0);
         
         final MyMenuBar myMenuBar = this;
-        final Hotel hotel = GUI.selectedHotel;
+        final Hotel hotel = GUI.getHotel();
         final JTextField name = ((JTextField)myPanel.getComponent(1));
         name.setText(hotel.getName());
         final JTextField address = ((JTextField)myPanel.getComponent(3));
@@ -175,8 +173,9 @@ public class MyMenuBar extends JMenuBar
             {
                 try
                 {
-                    int id = hotelCtrl.getId(hotel);
-                    hotelCtrl.editHotel(id, name.getText(), address.getText());
+                    Hotel myhotel = hotelCtrl.editHotel(hotel.getName(), 
+                            name.getText(), address.getText());
+                    GUI.setHotel(myhotel);
                 }
                 catch (Exception exc)
                 {
@@ -193,25 +192,26 @@ public class MyMenuBar extends JMenuBar
     
     private void removeHotel()
     {
-        if(hotelCtrl.getHotelCount() == 0)
+        Hotel[] hotels = hotelCtrl.getHotels();
+        if(hotels.length == 0)
         {
             GUI.showError("No hotels were added.", "Error", this);
             return;
         }
-        String[] hotelNames = new String[hotelCtrl.getHotelCount()];
+        String[] hotelNames = new String[hotels.length];
         for (int i = 0; i < hotelNames.length; i++)
-            hotelNames[i] = hotelCtrl.getHotel(i).getName();
+            hotelNames[i] = hotels[i].getName();
         
         String hotelToRemove = (String)JOptionPane.showInputDialog(this, 
             "Choose hotel to remove", "Removal", JOptionPane.QUESTION_MESSAGE, 
-            null, hotelNames, hotelCtrl.getHotel(0).getName());
+            null, hotelNames, hotels[0].getName());
         if (hotelToRemove == null)
             return;
         
         try
         {
-            if (GUI.selectedHotel.getName().equals(hotelToRemove))
-                GUI.selectedHotel = null;
+            if (GUI.getHotel().getName().equals(hotelToRemove))
+                GUI.setHotel(null);
             hotelCtrl.removeHotel(hotelToRemove);
         }
         catch (Exception e)

@@ -7,19 +7,20 @@ import java.awt.event.*;
 import net.sf.nachocalendar.CalendarFactory;
 import net.sf.nachocalendar.components.DateField;
 
-import hotel.controller.RoomCtrl;
 import hotel.controller.BookingCtrl;
 import hotel.controller.GuestCtrl;
 import hotel.core.Guest;
 import hotel.core.Booking;
+import hotel.utils.DateUtils;
+import java.text.DateFormat;
 import java.util.Date;
+import java.util.Locale;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 public class BookingTab extends JPanel
 {
     private JTable bookingTable;
-    private RoomCtrl roomCtrl;
     private BookingCtrl bookingCtrl;
     private JComponent[] bookingInputs;
     private JLabel[] bookingLabels;
@@ -28,16 +29,15 @@ public class BookingTab extends JPanel
     
     public BookingTab()
     {
-        if (GUI.selectedHotel != null)
+        this.setLayout(new GridLayout(1, 0));
+        if (GUI.getHotel() != null)
         {
-            String hotelName = GUI.selectedHotel.getName();
-            roomCtrl = new RoomCtrl(hotelName);
+            String hotelName = GUI.getHotel().getName();
             bookingCtrl = new BookingCtrl(hotelName);
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         }
         else
         {
-            roomCtrl = null;
             bookingCtrl = null;
             guestCtrl = null;
         }
@@ -50,10 +50,13 @@ public class BookingTab extends JPanel
         String[] bookingColumns = new String[] {"#", "id", "Guest Name", 
             "Room Nr", "Arrival Date", "Leaving Date", "Discount"};
         bookingTable = GUI.createTable(bookingColumns);
-        TableColumn columnToRemove = bookingTable.getColumnModel().getColumn(1); 
-        bookingTable.getColumnModel().removeColumn(columnToRemove);
+        bookingTable.getColumnModel().getColumn(0).setMaxWidth(30);
+        TableColumn idColumn = bookingTable.getColumnModel().getColumn(1); 
+        idColumn.setMaxWidth(0);
+        idColumn.setMinWidth(0);
+        idColumn.setPreferredWidth(0);
         updateTable();
-
+        
         JScrollPane bookingScrollPane = new JScrollPane(bookingTable);
         
         JButton addBooking = new JButton("Add");
@@ -62,7 +65,7 @@ public class BookingTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", 
                             bookingTab);
                 else
@@ -75,7 +78,7 @@ public class BookingTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", 
                             bookingTab);
                 else if (bookingTable.getSelectedRowCount() < 1)
@@ -92,7 +95,7 @@ public class BookingTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", 
                             bookingTab);
                 else if (bookingTable.getSelectedRowCount() < 1)
@@ -104,6 +107,7 @@ public class BookingTab extends JPanel
         });
         
         JToolBar bookingToolBar = new JToolBar();
+        bookingToolBar.setFloatable(false);
         bookingToolBar.add(addBooking);
         bookingToolBar.add(editBooking);
         bookingToolBar.add(removeBooking);
@@ -120,9 +124,9 @@ public class BookingTab extends JPanel
     private void addBookingCB()
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         if (bookingCtrl == null)
-            bookingCtrl = new BookingCtrl(GUI.selectedHotel.getName());
+            bookingCtrl = new BookingCtrl(GUI.getHotel().getName());
         
         if (guestCtrl.getGuestCount() == 0)
         {
@@ -137,9 +141,9 @@ public class BookingTab extends JPanel
         ((JComboBox)bookingInputs[0]).setSelectedIndex(0);
         bookingInputs[1] = new JSpinner(new SpinnerNumberModel(1, 1, 99, 1));
         bookingInputs[2] = CalendarFactory.createDateField();
-        ((DateField)bookingInputs[2]).setValue(new Date());
+        ((DateField)bookingInputs[2]).setValue(DateUtils.getToday());
         bookingInputs[3] = CalendarFactory.createDateField();
-        ((DateField)bookingInputs[3]).setValue(new Date());
+        ((DateField)bookingInputs[3]).setValue(DateUtils.getToday());
         bookingInputs[4] = new JSpinner(new SpinnerNumberModel(0, 0, 999, 1));
         final JDialog addDialog = GUI.dialog("Add Booking", bookingLabels, 
                 bookingInputs);
@@ -175,6 +179,7 @@ public class BookingTab extends JPanel
                 }
                 addDialog.setVisible(false);
                 updateTable();
+                GUI.updateRooms();
             }
         });
         addDialog.setVisible(true);
@@ -183,9 +188,9 @@ public class BookingTab extends JPanel
     private void editBookingCB(final int id)
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         if (bookingCtrl == null)
-            bookingCtrl = new BookingCtrl(GUI.selectedHotel.getName());
+            bookingCtrl = new BookingCtrl(GUI.getHotel().getName());
         
         Booking booking = bookingCtrl.getBooking(id);
         
@@ -222,7 +227,9 @@ public class BookingTab extends JPanel
             {
                 String guestName = (String)guestNamesCB.getSelectedItem();
                 Date arrivalDate = (Date)arrivalDateField.getValue();
+                arrivalDate = DateUtils.setTimeToMidnight(arrivalDate);
                 Date leavingDate = (Date)leavingDateField.getValue();
+                leavingDate = DateUtils.setTimeToMidnight(leavingDate);
                 int discountI = (Integer)discount.getValue();
                 int nrOfGuestsI = (Integer)nrOfGuests.getValue();
                 try
@@ -238,6 +245,7 @@ public class BookingTab extends JPanel
                 }
                 editDialog.setVisible(false);
                 updateTable();
+                GUI.updateRooms();
             }
         });
         editDialog.setVisible(true);
@@ -263,25 +271,60 @@ public class BookingTab extends JPanel
                 return;
             }
             updateTable();
+            GUI.updateRooms();
         }
     }
     
-    private void updateTable()
+    public void update()
+    {
+        if (GUI.getHotel() != null)
+        {
+            String hotelName = GUI.getHotel().getName();
+            if (bookingCtrl == null || guestCtrl == null)
+            {
+                bookingCtrl = new BookingCtrl(hotelName);
+                guestCtrl = new GuestCtrl(hotelName);
+            }
+            else
+            {
+                bookingCtrl.setHotelName(hotelName);
+                guestCtrl.setHotelName(hotelName);
+            }
+        }
+        else
+        {
+            bookingCtrl = null;
+            guestCtrl = null;
+        }
+        updateTable();
+        
+        if (bookingTable.getSelectedRowCount() < 1 && 
+                bookingTable.getRowCount() > 0)
+            bookingTable.setRowSelectionInterval(0, 0);
+    }
+    
+    public final void updateTable()
     {
         DefaultTableModel model = (DefaultTableModel) bookingTable.getModel();
         while(model.getRowCount() > 0)
             model.removeRow(0);
         
-        if (bookingCtrl == null)
+        if (GUI.getHotel() != null && bookingCtrl == null)
+            bookingCtrl = new BookingCtrl(GUI.getHotel().getName());
+        else if (GUI.getHotel() == null)
             return;
-        
+        Locale locale = Locale.getDefault();
         for(int i = 0; i < bookingCtrl.getBookingCount(); i++)
         {
             Booking booking = bookingCtrl.getBooking(i);
+            
+            String arrivalDate = DateFormat.getDateInstance(DateFormat.SHORT, 
+                    locale).format(booking.getArrivalDate());
+            String leavingDate = DateFormat.getDateInstance(DateFormat.SHORT, 
+                    locale).format(booking.getLeavingDate());
             Object[] bookingData = {i+1, booking.getId(), booking.getGuest().
                 getName(), booking.getRoom().getRoomNr(), 
-                booking.getArrivalDate(), booking.getLeavingDate(), 
-                booking.getDiscount()};
+                arrivalDate, leavingDate, booking.getDiscount()};
             model.addRow(bookingData);
         }
     }

@@ -13,7 +13,10 @@ import hotel.controller.GuestCtrl;
 import hotel.core.Guest;
 import hotel.core.Room;
 import hotel.core.Booking;
+import hotel.utils.DateUtils;
+import java.text.DateFormat;
 import java.util.Date;
+import java.util.Locale;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -31,15 +34,17 @@ public class RoomTab extends JPanel
     private JLabel[] bookingLabels;
     private GuestCtrl guestCtrl;
     private final RoomTab roomTab = this;
+    //private GUI gui;
     
     public RoomTab()
     {
-        if (GUI.selectedHotel != null)
+        this.setLayout(new GridLayout(1, 0));
+        if (GUI.getHotel() != null)
         {
-            String hotelName = GUI.selectedHotel.getName();
+            String hotelName = GUI.getHotel().getName();
             roomCtrl = new RoomCtrl(hotelName);
             bookingCtrl = new BookingCtrl(hotelName);
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         }
         else
         {
@@ -49,7 +54,7 @@ public class RoomTab extends JPanel
         }
         
         roomLabels = new JLabel[]{new JLabel("Room Nr"), new JLabel("Size"), 
-            new JLabel("Price"), new JLabel("Nr of bedrooms")};
+            new JLabel("Sq Meter cost"), new JLabel("Nr of bedrooms")};
         roomInputs = new JSpinner[4];
         for (int i = 0; i < roomInputs.length; i++)
             roomInputs[i] = new JSpinner(new SpinnerNumberModel(1, 1, 999, 1));
@@ -58,17 +63,22 @@ public class RoomTab extends JPanel
             new JLabel("Discount")};
         bookingInputs = new JComponent[4];
         
-        String[] roomColumns = new String[] {"#", "Nr", "Size", "Sq Meter cost", 
+        String[] roomColumns = new String[] {"#", "Nr", "Size", "Price", 
             "bedrooms"};
         roomTable = GUI.createTable(roomColumns);
+        roomTable.getColumnModel().getColumn(0).setMaxWidth(30);
+        roomTable.getColumnModel().getColumn(1).setMaxWidth(30);
         updateRoomTable();
         
         String[] bookingColumns = new String[] {"#", "id", "Guest Name", 
             "Arrival Date", "Leaving Date", "Discount"};
         bookingTable = GUI.createTable(bookingColumns);
-        TableColumn columnToRemove = bookingTable.getColumnModel().getColumn(1); 
-        bookingTable.getColumnModel().removeColumn(columnToRemove);
-        
+        bookingTable.getColumnModel().getColumn(0).setMaxWidth(30);
+        TableColumn idColumn = bookingTable.getColumnModel().getColumn(1);
+        idColumn.setMaxWidth(0);
+        idColumn.setMinWidth(0);
+        idColumn.setPreferredWidth(0);
+                
         roomTable.getSelectionModel().addListSelectionListener(
         new ListSelectionListener() 
         {
@@ -77,13 +87,18 @@ public class RoomTab extends JPanel
             {
                 if (bookingCtrl == null)
                     return;
+                if (roomTable.getSelectedRowCount() < 1 && 
+                        roomTable.getRowCount() > 0)
+                    roomTable.setRowSelectionInterval(0, 0);
                 
                 int selected;
                 if (roomTable.getSelectedRowCount() > 0)
                     selected = roomTable.getSelectedRow();
                 else
+                {
+                    updateBookingTable(-1);
                     return;
-                
+                }
                 updateBookingTable(selected);
             }
         });
@@ -97,7 +112,7 @@ public class RoomTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", roomTab);
                 else
                     addRoomCB();
@@ -109,7 +124,7 @@ public class RoomTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", roomTab);
                 else if (roomTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some room.", "Error", roomTab);
@@ -124,7 +139,7 @@ public class RoomTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", roomTab);
                 else if (roomTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some room.", "Error", roomTab);
@@ -134,6 +149,7 @@ public class RoomTab extends JPanel
         });
         
         JToolBar roomToolBar = new JToolBar();
+        roomToolBar.setFloatable(false);
         roomToolBar.add(AddRoom);
         roomToolBar.add(editRoom);
         roomToolBar.add(removeRoom);
@@ -144,7 +160,7 @@ public class RoomTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", roomTab);
                 else if (roomTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some room.", "Error", roomTab);
@@ -159,7 +175,7 @@ public class RoomTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", roomTab);
                 else if (roomTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some room.", "Error", roomTab);
@@ -178,7 +194,7 @@ public class RoomTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", roomTab);
                 else if (roomTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some room.", "Error", roomTab);
@@ -193,6 +209,8 @@ public class RoomTab extends JPanel
         });
         
         JToolBar bookingToolBar = new JToolBar();
+        bookingToolBar.setFloatable(false);
+        bookingToolBar.add(new JLabel("Bookings   "));
         bookingToolBar.add(addBooking);
         bookingToolBar.add(editBooking);
         bookingToolBar.add(removeBooking);
@@ -218,9 +236,9 @@ public class RoomTab extends JPanel
     private void addBookingCB(final int roomId)
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         if (bookingCtrl == null)
-            bookingCtrl = new BookingCtrl(GUI.selectedHotel.getName());
+            bookingCtrl = new BookingCtrl(GUI.getHotel().getName());
         
         if (guestCtrl.getGuestCount() == 0)
         {
@@ -234,9 +252,9 @@ public class RoomTab extends JPanel
         bookingInputs[0] = new JComboBox(guestNames);
         ((JComboBox)bookingInputs[0]).setSelectedIndex(0);
         bookingInputs[1] = CalendarFactory.createDateField();
-        ((DateField)bookingInputs[1]).setValue(new Date());
+        ((DateField)bookingInputs[1]).setValue(DateUtils.getToday());
         bookingInputs[2] = CalendarFactory.createDateField();
-        ((DateField)bookingInputs[2]).setValue(new Date());
+        ((DateField)bookingInputs[2]).setValue(DateUtils.getToday());
         bookingInputs[3] = new JSpinner(new SpinnerNumberModel(0, 0, 999, 1));
         final JDialog addDialog = GUI.dialog("Add Booking", bookingLabels, 
                 bookingInputs);
@@ -272,6 +290,8 @@ public class RoomTab extends JPanel
                 addDialog.setVisible(false);
                 updateRoomTable();
                 updateBookingTable(roomId);
+                roomTable.setRowSelectionInterval(roomId, roomId);
+                GUI.updateBookings();
             }
         });
         addDialog.setVisible(true);
@@ -280,9 +300,9 @@ public class RoomTab extends JPanel
     private void editBookingCB(final int bookingId, final int roomId)
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         if (bookingCtrl == null)
-            bookingCtrl = new BookingCtrl(GUI.selectedHotel.getName());
+            bookingCtrl = new BookingCtrl(GUI.getHotel().getName());
         
         Booking booking = bookingCtrl.getBookingByBookingId(bookingId);
         
@@ -333,6 +353,8 @@ public class RoomTab extends JPanel
                 editDialog.setVisible(false);
                 updateRoomTable();
                 updateBookingTable(roomId);
+                GUI.updateBookings();
+                roomTable.setRowSelectionInterval(roomId, roomId);
             }
         });
         editDialog.setVisible(true);
@@ -358,13 +380,15 @@ public class RoomTab extends JPanel
             }
             updateRoomTable();
             updateBookingTable(selectedRoom);
+            GUI.updateBookings();
+            roomTable.setRowSelectionInterval(selectedRoom, selectedRoom);
         }
     }
     
     private void addRoomCB()
     {
         if (roomCtrl == null)
-            roomCtrl = new RoomCtrl(GUI.selectedHotel.getName());
+            roomCtrl = new RoomCtrl(GUI.getHotel().getName());
         final JDialog addDialog = GUI.dialog("Add", roomLabels, roomInputs);
         JPanel myPanel = (JPanel)addDialog.getContentPane().getComponent(0);
         
@@ -382,12 +406,6 @@ public class RoomTab extends JPanel
                 try
                 {
                     int roomNrI = (Integer)roomNr.getValue();
-                    if (roomCtrl.getRoomByRoomNr(roomNrI) != null)
-                    {
-                        GUI.showError("Room with specified room nr already "
-                                + "exists", "Error", roomTab);
-                        return;
-                    }
                     int sizeI = (Integer) size.getValue();
                     int priceI = (Integer) price.getValue();
                     int bedrooomsI = (Integer) bedrooms.getValue();
@@ -401,6 +419,7 @@ public class RoomTab extends JPanel
                 
                 addDialog.setVisible(false);
                 updateRoomTable();
+                GUI.updateBookings();
             }
         });
         
@@ -418,8 +437,7 @@ public class RoomTab extends JPanel
         {
             try
             {
-                Room room = roomCtrl.getRoomById(id);
-                roomCtrl.removeRoom(room.getRoomNr());
+                roomCtrl.removeRoom(id);
             }
             catch (Exception e)
             {
@@ -427,13 +445,15 @@ public class RoomTab extends JPanel
                 return;
             }
             updateRoomTable();
+            updateBookingTable(id);
+            GUI.updateBookings();
         }
     }
     
     private void editRoomCB(final int id)
     {
         if (roomCtrl == null)
-            roomCtrl = new RoomCtrl(GUI.selectedHotel.getName());
+            roomCtrl = new RoomCtrl(GUI.getHotel().getName());
         final JDialog editDialog = GUI.dialog("Edit", roomLabels, roomInputs);
         JPanel myPanel = (JPanel)editDialog.getContentPane().getComponent(0);
         
@@ -456,13 +476,6 @@ public class RoomTab extends JPanel
                 try
                 {
                     int roomNrI = (Integer)roomNr.getValue();
-                    if (roomNrI != room.getRoomNr() &&
-                            roomCtrl.getRoomByRoomNr(roomNrI) != null)
-                    {
-                        GUI.showError("Another room with specified room nr "
-                                + "already exists", "Error", roomTab);
-                        return;
-                    }
                     int sizeI = (Integer) size.getValue();
                     int priceI = (Integer) price.getValue();
                     int bedrooomsI = (Integer) bedrooms.getValue();
@@ -476,10 +489,31 @@ public class RoomTab extends JPanel
                 
                 editDialog.setVisible(false);
                 updateRoomTable();
+                GUI.updateBookings();
             }
         });
         
         editDialog.setVisible(true);
+    }
+    
+    public void update()
+    {
+        if (GUI.getHotel() != null)
+        {
+            bookingCtrl = new BookingCtrl(GUI.getHotel().getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
+            roomCtrl = new RoomCtrl(GUI.getHotel().getName());
+        }
+        else
+        {
+            bookingCtrl = null;
+            guestCtrl = null;
+            roomCtrl = null;            
+        }
+        updateRoomTable();
+        if (roomTable.getSelectedRowCount() < 1 && 
+                roomTable.getRowCount() > 0)
+            roomTable.setRowSelectionInterval(0, 0);
     }
     
     private void updateRoomTable()
@@ -501,20 +535,29 @@ public class RoomTab extends JPanel
     }
     
     private void updateBookingTable(int selectedRoom)
-    {
-        Room room = roomCtrl.getRoomById(selectedRoom);
-        Booking[] bookings = bookingCtrl.getBookingsByRoom(room);
-        
+    {        
         DefaultTableModel model = (DefaultTableModel) bookingTable.getModel();
         while(model.getRowCount() > 0)
             model.removeRow(0);
+        if (selectedRoom == -1)
+            return;
+        
+        Room room = roomCtrl.getRoomById(selectedRoom);
+        if (room == null)
+            return;
+        Booking[] bookings = bookingCtrl.getBookingsByRoom(room);
+        Locale locale = Locale.getDefault();
         
         for (int i = 0; i < bookings.length; i++)
         {
             Booking booking = bookings[i];
+            String arrivalDate = DateFormat.getDateInstance(DateFormat.SHORT, 
+                    locale).format(booking.getArrivalDate());
+            String leavingDate = DateFormat.getDateInstance(DateFormat.SHORT, 
+                    locale).format(booking.getLeavingDate());
             Object[] bookingData = {i+1, booking.getId(), 
-                booking.getGuest().getName(), booking.getArrivalDate(), 
-                booking.getLeavingDate(), booking.getDiscount()};
+                booking.getGuest().getName(), arrivalDate, leavingDate, 
+                booking.getDiscount()};
             model.addRow(bookingData);
         }
     }

@@ -22,14 +22,19 @@ public class GuestTab extends JPanel
     private JComponent[] expenseInputs;
     private JLabel[] expenseLabels;
     private final GuestTab guestTab = this;
+    //private GUI gui;
     
     public GuestTab()
     {
+        this.setLayout(new GridLayout(1, 0));
         expenseCtrl = null;
-        if (GUI.selectedHotel != null)
+        if (GUI.getHotel() != null)
         {
-            String hotelName = GUI.selectedHotel.getName();
-            guestCtrl = new GuestCtrl(hotelName);
+            String hotelName = GUI.getHotel().getName();
+            if (guestCtrl == null)
+                guestCtrl = new GuestCtrl(hotelName);
+            else
+                guestCtrl.setHotelName(hotelName);
         }
         else
         {
@@ -44,19 +49,24 @@ public class GuestTab extends JPanel
         
         String[] guestColumns = new String[] {"#", "Name"};
         guestTable = GUI.createTable(guestColumns);
-        updateGuestTable();
+        guestTable.getColumnModel().getColumn(0).setMaxWidth(30);
+        updateGuestTable();    
         
         String[] expenseColumns = new String[] {"#", "Name", "Price"};
         expenseTable = GUI.createTable(expenseColumns);
-        
+        expenseTable.getColumnModel().getColumn(0).setMaxWidth(30);
         guestTable.getSelectionModel().addListSelectionListener(
         new ListSelectionListener() 
         {
             @Override
             public void valueChanged(ListSelectionEvent e)
             {
-                if (expenseCtrl == null)
+                if (guestCtrl == null)
                     return;
+                
+                if (guestTable.getSelectedRowCount() < 1 && 
+                        guestTable.getRowCount() > 0)
+                    guestTable.setRowSelectionInterval(0, 0);
                 
                 int selected;
                 if (guestTable.getSelectedRowCount() > 0)
@@ -77,7 +87,7 @@ public class GuestTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", guestTab);
                 else
                     addGuestCB();
@@ -89,7 +99,7 @@ public class GuestTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", guestTab);
                 else if (guestTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some guest.", "Error", 
@@ -105,7 +115,7 @@ public class GuestTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", guestTab);
                 else if (guestTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some guest.", "Error", 
@@ -116,6 +126,7 @@ public class GuestTab extends JPanel
         });
         
         JToolBar guestToolBar = new JToolBar();
+        guestToolBar.setFloatable(false);
         guestToolBar.add(addGuest);
         guestToolBar.add(editGuest);
         guestToolBar.add(removeGuest);
@@ -126,7 +137,7 @@ public class GuestTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", guestTab);
                 else if (guestTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some guest.", "Error", 
@@ -142,7 +153,7 @@ public class GuestTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", guestTab);
                 else if (guestTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some guest.", "Error", 
@@ -161,12 +172,12 @@ public class GuestTab extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (GUI.selectedHotel == null)
+                if (GUI.getHotel() == null)
                     GUI.showError("Hotel must be selected.", "Error", guestTab);
                 else if (guestTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some guest.", "Error", 
                             guestTab);
-                else if (guestTable.getSelectedRowCount() < 1)
+                else if (expenseTable.getSelectedRowCount() < 1)
                     GUI.showError("Please select some expense", "Error", 
                             guestTab);
                 else 
@@ -176,6 +187,8 @@ public class GuestTab extends JPanel
         });
         
         JToolBar expenseToolBar = new JToolBar();
+        expenseToolBar.setFloatable(false);
+        expenseToolBar.add(new JLabel("Expenses   "));
         expenseToolBar.add(addExpense);
         expenseToolBar.add(editExpense);
         expenseToolBar.add(removeExpense);
@@ -196,6 +209,22 @@ public class GuestTab extends JPanel
         
         this.add(splitPane);
         this.setVisible(true);
+    }
+    
+    public void update()
+    {
+        if (GUI.getHotel() != null && guestCtrl == null)
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
+        else if(GUI.getHotel() != null)
+            guestCtrl.setHotelName(GUI.getHotel().getName());
+        else
+            guestCtrl = null;
+
+        updateGuestTable();
+        
+        if (guestTable.getSelectedRowCount() < 1 && 
+                guestTable.getRowCount() > 0)
+            guestTable.setRowSelectionInterval(0, 0);
     }
 
     private void updateGuestTable()
@@ -218,7 +247,7 @@ public class GuestTab extends JPanel
     private void updateExpenseTable(int selectedGuest)
     {
         Guest guest = guestCtrl.getGuestById(selectedGuest);
-        Expense[] expenses = expenseCtrl.getExpensesByGuest(guest.getName());
+        Expense[] expenses = ExpenseCtrl.getExpensesByGuest(guest.getName());
         
         DefaultTableModel model = (DefaultTableModel) expenseTable.getModel();
         while(model.getRowCount() > 0)
@@ -235,7 +264,7 @@ public class GuestTab extends JPanel
     private void addGuestCB()
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
 
         String guestName = JOptionPane.showInputDialog(guestTab, "Name");
 
@@ -251,13 +280,15 @@ public class GuestTab extends JPanel
                 return;
             }
             updateGuestTable();
+            GUI.updateBookings();
+            GUI.updateRooms();
         }
     }
     
     private void editGuestCB(int id)
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
 
         Guest guest = guestCtrl.getGuestById(id);
         String guestName = JOptionPane.showInputDialog(guestTab, "Name", 
@@ -275,6 +306,9 @@ public class GuestTab extends JPanel
                 return;
             }
             updateGuestTable();
+            guestTable.setRowSelectionInterval(id, id);
+            GUI.updateBookings();
+            GUI.updateRooms();
         }
     }
     
@@ -291,7 +325,7 @@ public class GuestTab extends JPanel
         {
             try
             {
-                guestCtrl.removeGuest(guestName);
+                guestCtrl.removeGuest(id);
             }
             catch (Exception e)
             {
@@ -299,15 +333,20 @@ public class GuestTab extends JPanel
             }
             
             updateGuestTable();
+            GUI.updateBookings();
+            GUI.updateRooms();
         }
     }
     
     private void addExpenseCB(final int guestId)
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         String guestName = guestCtrl.getGuestById(guestId).getName();
-        expenseCtrl = new ExpenseCtrl(guestName);
+        if (expenseCtrl == null)
+            expenseCtrl = new ExpenseCtrl(guestName);
+        else
+            expenseCtrl.setGuestName(guestName);
         
         final JDialog addDialog = GUI.dialog("Add Expense", expenseLabels, 
                 expenseInputs);
@@ -335,6 +374,7 @@ public class GuestTab extends JPanel
                 }
                 addDialog.setVisible(false);
                 updateGuestTable();
+                guestTable.setRowSelectionInterval(guestId, guestId);
                 updateExpenseTable(guestId);
             }
         });
@@ -344,9 +384,12 @@ public class GuestTab extends JPanel
     private void editExpenseCB(final int expenseId, final int guestId)
     {
         if (guestCtrl == null)
-            guestCtrl = new GuestCtrl(GUI.selectedHotel.getName());
+            guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         String guestName = guestCtrl.getGuestById(guestId).getName();
-        expenseCtrl = new ExpenseCtrl(guestName);
+        if (expenseCtrl == null)
+            expenseCtrl = new ExpenseCtrl(guestName);
+        else
+            expenseCtrl.setGuestName(guestName);
         
         Expense expense = expenseCtrl.getExpenseById(expenseId);
         
@@ -378,6 +421,7 @@ public class GuestTab extends JPanel
                 }
                 editDialog.setVisible(false);
                 updateGuestTable();
+                guestTable.setRowSelectionInterval(guestId, guestId);
                 updateExpenseTable(guestId);
             }
         });
@@ -392,14 +436,16 @@ public class GuestTab extends JPanel
                 JOptionPane.YES_NO_OPTION);
         
         String guestName = guestCtrl.getGuestById(guestId).getName();
-        expenseCtrl = new ExpenseCtrl(guestName);
+        if (expenseCtrl == null)
+            expenseCtrl = new ExpenseCtrl(guestName);
+        else
+            expenseCtrl.setGuestName(guestName);
         
         if (choice == 0)
         {
             try
             {
-                Expense expense = expenseCtrl.getExpenseById(expenseId);
-                expenseCtrl.removeExpense(expense.getName());
+                expenseCtrl.removeExpense(expenseId);
             }
             catch (Exception e)
             {
@@ -407,6 +453,7 @@ public class GuestTab extends JPanel
                 return;
             }
             updateGuestTable();
+            guestTable.setRowSelectionInterval(guestId, guestId);
             updateExpenseTable(guestId);
         }
     }

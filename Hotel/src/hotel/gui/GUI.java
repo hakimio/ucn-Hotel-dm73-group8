@@ -12,31 +12,57 @@ import hotel.core.Hotel;
 
 public class GUI extends JFrame
 {   
-    public static Hotel selectedHotel = null;
-    private static GUI instance = null;
+    private static Hotel selectedHotel = null;
+    private static RoomTab roomTab = new RoomTab();
+    private static BookingTab bookingTab = new BookingTab();
+    private static GuestTab guestTab = new GuestTab();
     
-    private GUI()
+    public GUI()
     {
-        super("Western Style");
+        super("Hotel Manager");
+        selectedHotel = null;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(640, 480));
         
         setJMenuBar(new MyMenuBar());
         
         JTabbedPane jTabbedPane = new JTabbedPane();
-        jTabbedPane.add("Rooms", new RoomTab());
-        jTabbedPane.add("Bookings", new BookingTab());
         
+        jTabbedPane.add("Rooms", roomTab);
+        jTabbedPane.add("Bookings", bookingTab);
+        jTabbedPane.add("Guests", guestTab);
+        
+        add(jTabbedPane);
         pack();
         setVisible(true);
     }
-    
-    public static GUI getInstance()
-    {
-        if (instance == null)
-            instance = new GUI();
         
-        return instance;
+    public static void setHotel(Hotel hotel)
+    {
+        selectedHotel = hotel;
+        roomTab.update();
+        bookingTab.update();
+        guestTab.update();
+    }
+    
+    public static void updateRooms()
+    {
+        roomTab.update();
+    }
+    
+    public static void updateBookings()
+    {
+        bookingTab.update();
+    }
+    
+    public static void updateGuests()
+    {
+        guestTab.update();
+    }
+    
+    public static Hotel getHotel()
+    {
+        return selectedHotel;
     }
     
     public static JTable createTable(Object[] columnNames)
@@ -57,7 +83,8 @@ public class GUI extends JFrame
 
         table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
+        table.setColumnSelectionAllowed(false);
+        table.setRowSelectionAllowed(true);
         return table;
     }
     
@@ -96,6 +123,7 @@ public class GUI extends JFrame
         });
         myPanel.add(cancelButton);
         dialog.setResizable(false);
+        dialog.setLocationRelativeTo(null);
         dialog.pack();
 
         return dialog;
