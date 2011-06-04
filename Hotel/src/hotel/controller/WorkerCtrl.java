@@ -3,6 +3,7 @@ package hotel.controller;
 import java.util.ArrayList;
 import hotel.core.Worker;
 import hotel.DB.WorkerDB;
+import hotel.utils.DateUtils;
 import java.util.Date;
 
 public class WorkerCtrl
@@ -43,7 +44,7 @@ public class WorkerCtrl
     public void addWorker(String name, Date birthDate, Date startedWorking, 
             int income, String position)
     {
-        if (startedWorking.before(new Date()))
+        if (startedWorking.before(DateUtils.getToday()))
             throw  new IllegalStateException("Date at which worker starts "
                     + "working can not be in the past.");
         Worker worker = new Worker(name, birthDate, startedWorking, income, 

@@ -2,6 +2,7 @@ package hotel.controller;
 
 import hotel.core.Room;
 import hotel.DB.RoomDB;
+import hotel.core.Booking;
 import java.util.ArrayList;
 
 public class RoomCtrl
@@ -41,20 +42,42 @@ public class RoomCtrl
     public void addRoom(int roomNr, int meterCost, int sqMeters, 
             int nrOfBedrooms)
     {
+        if (getRoomByRoomNr(roomNr) != null)
+            throw new IllegalStateException("Room with the specified room nr"
+                    + " already exists.");
+        
         Room room = new Room(roomNr, meterCost, sqMeters, nrOfBedrooms);
         roomDB.insertRoom(room, hotelName);
         rooms.add(room);
     }
     
-    public void removeRoom(int roomNr)
+    public void removeRoom(int roomId)
     {
-        rooms.remove(roomDB.getRoom(roomNr, hotelName));
+        int roomNr = rooms.get(roomId).getRoomNr();
+        BookingCtrl bookingCtrl = new BookingCtrl(hotelName);
+        for (int i = 0; i < bookingCtrl.getBookingCount(); i++)
+        {
+            Booking booking = bookingCtrl.getBooking(i);
+            if (booking.getRoom().getRoomNr() == roomNr)
+                bookingCtrl.removeBooking(booking.getId());
+        }
         roomDB.delete(roomNr, hotelName);
+        rooms.remove(roomId);
     }
     
     public Room getRoomById(int id)
     {
-        return rooms.get(id);
+        Room room;
+        try
+        {
+            room = rooms.get(id);
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            return null;
+        }
+        
+        return room;
     }
     
     public Room getRoomByRoomNr(int roomNr)
@@ -66,6 +89,9 @@ public class RoomCtrl
             int nrOfBedrooms)
     {
         Room oldRoom = rooms.get(id);
+        if (roomNr != oldRoom.getRoomNr() && getRoomByRoomNr(roomNr) != null)
+            throw new IllegalStateException("Another room with the specified "
+                    + "room nr already exists.");
         Room newRoom = new Room(roomNr, meterCost, sqMeters, nrOfBedrooms);
         roomDB.updateRoom(newRoom, oldRoom.getRoomNr(), hotelName);
         rooms.set(id, newRoom);

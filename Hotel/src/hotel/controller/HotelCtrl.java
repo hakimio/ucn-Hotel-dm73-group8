@@ -6,25 +6,24 @@ import hotel.DB.HotelDB;
 
 public class HotelCtrl
 {
-    private ArrayList<Hotel> hotels;
     private HotelDB hotelDB;
     
     public HotelCtrl()
     {
         hotelDB = new HotelDB();
-        hotels = hotelDB.getHotels();
     }
     
     public void addHotel(String name, String address)
     {
+        if (getHotelByName(name) != null)
+            throw new IllegalStateException("Hotel with the specified name "
+                    + "already exists");
         Hotel hotel = new Hotel(name, address);
-        hotels.add(hotel);
         hotelDB.insertHotel(hotel);
     }
     
     public void removeHotel(String name)
     {
-        Hotel hotel = hotelDB.getHotel(name);
         BookingCtrl bookingCtrl = new BookingCtrl(name);
         GuestCtrl guestCtrl = new GuestCtrl(name);
         RoomCtrl roomCtrl = new RoomCtrl(name);
@@ -37,13 +36,11 @@ public class HotelCtrl
         }
         for (int i = 0; i < guestCtrl.getGuestCount(); i++)
         {
-            Guest guest = guestCtrl.getGuestById(0);
-            guestCtrl.removeGuest(guest.getName());
+            guestCtrl.removeGuest(0);
         }
         for (int i = 0; i < roomCtrl.getRoomCount(); i++)
         {
-            Room room = roomCtrl.getRoomById(0);
-            roomCtrl.removeRoom(room.getRoomNr());
+            roomCtrl.removeRoom(0);
         }
         for (int i = 0; i < workerCtrl.getWorkerCount(); i++)
         {
@@ -51,7 +48,6 @@ public class HotelCtrl
             workerCtrl.removeWorker(worker.getName());
         }
         
-        hotels.remove(hotel);
         hotelDB.delete(name);
     }
     
@@ -60,26 +56,21 @@ public class HotelCtrl
         return hotelDB.getHotel(name);
     }
     
-    public void editHotel(int id, String name, String address)
+    public Hotel editHotel(String oldName, String name, String address)
     {
-        Hotel oldHotel = hotels.get(id);
+        if (!name.equals(oldName) && getHotelByName(name) != null)
+            throw new IllegalStateException("Another hotel with the specified"
+                    + " name already exists.");
+        
         Hotel newHotel = new Hotel(name, address);
-        hotelDB.updateHotel(newHotel, oldHotel.getName());
-        hotels.set(id, newHotel);
+        hotelDB.updateHotel(newHotel, oldName);
+        return newHotel;
     }
     
-    public Hotel getHotel(int id)
+    public Hotel[] getHotels()
     {
-        return hotels.get(id);
-    }
-    
-    public int getId(Hotel hotel)
-    {
-        return hotels.indexOf(hotel);
-    }
-    
-    public int getHotelCount()
-    {
-        return hotels.size();
+        ArrayList<Hotel> hotels = hotelDB.getHotels();
+        
+        return hotels.toArray(new Hotel[hotels.size()]);
     }
 }
