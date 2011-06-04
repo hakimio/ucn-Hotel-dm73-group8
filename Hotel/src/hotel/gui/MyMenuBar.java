@@ -40,6 +40,21 @@ public class MyMenuBar extends JMenuBar
         hotelMenu.add(exitMI);
         this.add(hotelMenu);
         
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem aboutMI = new JMenuItem("About");
+        helpMenu.add(aboutMI);
+        this.add(helpMenu);
+        final MyMenuBar myMenuBar = this;
+        aboutMI.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                JOptionPane.showMessageDialog(myMenuBar, "Created by Tomas "
+                        + "Rimkus", "About", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
         newMI.addActionListener(new ActionListener() 
         {
             @Override
