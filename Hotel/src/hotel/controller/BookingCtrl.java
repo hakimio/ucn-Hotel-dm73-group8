@@ -44,7 +44,7 @@ public class BookingCtrl
             throw new IllegalStateException("Arrival date can not be in "
                     + "the past.");
         ArrayList<Booking> roomBookings = bookingDB.
-                getBookingsByRoom(room.getRoomNr());
+                getBookingsByRoom(room.getRoomNr(), hotelName);
         
         
         for (int i = 0; i < roomBookings.size(); i++)
@@ -249,7 +249,8 @@ public class BookingCtrl
     
     public Booking[] getBookingsByRoom(Room room)
     {
-        ArrayList<Booking> b = bookingDB.getBookingsByRoom(room.getRoomNr());
+        ArrayList<Booking> b = bookingDB.getBookingsByRoom(room.getRoomNr(), 
+                hotelName);
         
         return b.toArray(new Booking[b.size()]);
     }
