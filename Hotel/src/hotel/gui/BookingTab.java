@@ -242,7 +242,7 @@ public class BookingTab extends JPanel
         ((DateField)bookingInputs[3]).setValue(booking.getLeavingDate());
         bookingInputs[4] = new JSpinner(new SpinnerNumberModel(0, 0, 999, 1));
         ((JSpinner)bookingInputs[4]).setValue(booking.getDiscount());
-        final JDialog editDialog = GUI.dialog("Add Booking", bookingLabels, 
+        final JDialog editDialog = GUI.dialog("Edit Booking", bookingLabels, 
                 bookingInputs);
         JPanel myPanel = (JPanel)editDialog.getContentPane().getComponent(0);
         

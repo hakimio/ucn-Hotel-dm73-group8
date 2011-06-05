@@ -386,7 +386,7 @@ public class RoomTab extends JPanel
         SpinnerModel discountModel = new SpinnerNumberModel(booking.
                 getDiscount(), 0, 999, 1);
         bookingInputs[3] = new JSpinner(discountModel);
-        final JDialog editDialog = GUI.dialog("Add Booking", bookingLabels, 
+        final JDialog editDialog = GUI.dialog("Edit Booking", bookingLabels, 
                 bookingInputs);
         JPanel myPanel = (JPanel)editDialog.getContentPane().getComponent(0);
         
