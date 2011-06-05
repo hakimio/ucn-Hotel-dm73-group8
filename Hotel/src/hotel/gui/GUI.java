@@ -16,10 +16,11 @@ public class GUI extends JFrame
     private static RoomTab roomTab = new RoomTab();
     private static BookingTab bookingTab = new BookingTab();
     private static GuestTab guestTab = new GuestTab();
+    private static GUI instance = null;
     
-    public GUI()
+    private GUI()
     {
-        super("Hotel Manager");
+        super("Hotel Manager - No hotel selected");
         selectedHotel = null;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(640, 480));
@@ -36,10 +37,21 @@ public class GUI extends JFrame
         pack();
         setVisible(true);
     }
+    
+    public static GUI getInstance()
+    {
+        if (instance == null)
+            instance = new GUI();
+        return instance;
+    }
         
     public static void setHotel(Hotel hotel)
     {
         selectedHotel = hotel;
+        if (hotel != null)
+            GUI.getInstance().setTitle("Hotel Manager - " + hotel.getName());
+        else
+            GUI.getInstance().setTitle("Hotel Manager - No hotel selected");
         roomTab.update();
         bookingTab.update();
         guestTab.update();
