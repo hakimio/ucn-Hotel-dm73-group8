@@ -68,8 +68,6 @@ public class GuestTab extends JPanel
             {
                 if (e.getValueIsAdjusting())
                     return;
-                if (guestCtrl == null)
-                    return;
                 
                 if (guestTable.getSelectedRowCount() < 1 && 
                         guestTable.getRowCount() > 0)
@@ -311,7 +309,8 @@ public class GuestTab extends JPanel
         DefaultTableModel model = (DefaultTableModel) expenseTable.getModel();
         while(model.getRowCount() > 0)
             model.removeRow(0);
-        
+        if (guestCtrl == null)
+            return;
         Guest guest = guestCtrl.getGuestById(selectedGuest);
         if (guest == null)
             return;

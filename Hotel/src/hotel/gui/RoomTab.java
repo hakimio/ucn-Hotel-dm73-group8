@@ -95,8 +95,7 @@ public class RoomTab extends JPanel
             {
                 if (e.getValueIsAdjusting())
                     return;
-                if (bookingCtrl == null)
-                    return;
+
                 if (roomTable.getSelectedRowCount() < 1 && 
                         roomTable.getRowCount() > 0)
                     roomTable.setRowSelectionInterval(0, 0);
@@ -607,7 +606,7 @@ public class RoomTab extends JPanel
         DefaultTableModel model = (DefaultTableModel) bookingTable.getModel();
         while(model.getRowCount() > 0)
             model.removeRow(0);
-        if (selectedRoom == -1)
+        if (selectedRoom == -1 || roomCtrl == null)
             return;
         
         Room room = roomCtrl.getRoomById(selectedRoom);
