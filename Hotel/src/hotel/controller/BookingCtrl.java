@@ -63,7 +63,7 @@ public class BookingCtrl
         }
         
         double totalPrice = room.getCost();
-        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName());
+        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName(), hotelName);
         
         totalPrice += expenseCtrl.getTotalExpenses();
         
@@ -112,7 +112,7 @@ public class BookingCtrl
                     + "specified time interval.");
         
         double totalPrice = foundRoom.getCost();
-        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName());
+        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName(), hotelName);
         
         totalPrice += expenseCtrl.getTotalExpenses();
         
@@ -156,7 +156,7 @@ public class BookingCtrl
                     + " can hold the specified number of guests.");
         
         double totalPrice = foundRoom.getCost();
-        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName());
+        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName(), hotelName);
         
         totalPrice += expenseCtrl.getTotalExpenses();
         
@@ -212,7 +212,7 @@ public class BookingCtrl
         }
         
         double totalPrice = room.getCost();
-        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName());
+        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName(), hotelName);
         
         totalPrice += expenseCtrl.getTotalExpenses();
         

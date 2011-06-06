@@ -315,7 +315,8 @@ public class GuestTab extends JPanel
         if (guest == null)
             return;
         
-        Expense[] expenses = ExpenseCtrl.getExpensesByGuest(guest.getName());
+        Expense[] expenses = ExpenseCtrl.getExpensesByGuest(guest.getName(), 
+                GUI.getHotel().getName());
         
         for (int i = 0; i < expenses.length; i++)
         {
@@ -408,7 +409,7 @@ public class GuestTab extends JPanel
             guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         String guestName = guestCtrl.getGuestById(guestId).getName();
         if (expenseCtrl == null)
-            expenseCtrl = new ExpenseCtrl(guestName);
+            expenseCtrl = new ExpenseCtrl(guestName, GUI.getHotel().getName());
         else
             expenseCtrl.setGuestName(guestName);
         
@@ -451,7 +452,7 @@ public class GuestTab extends JPanel
             guestCtrl = new GuestCtrl(GUI.getHotel().getName());
         String guestName = guestCtrl.getGuestById(guestId).getName();
         if (expenseCtrl == null)
-            expenseCtrl = new ExpenseCtrl(guestName);
+            expenseCtrl = new ExpenseCtrl(guestName, GUI.getHotel().getName());
         else
             expenseCtrl.setGuestName(guestName);
         
@@ -501,7 +502,7 @@ public class GuestTab extends JPanel
         
         String guestName = guestCtrl.getGuestById(guestId).getName();
         if (expenseCtrl == null)
-            expenseCtrl = new ExpenseCtrl(guestName);
+            expenseCtrl = new ExpenseCtrl(guestName, GUI.getHotel().getName());
         else
             expenseCtrl.setGuestName(guestName);
         

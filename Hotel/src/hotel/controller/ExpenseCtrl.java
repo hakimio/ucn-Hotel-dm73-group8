@@ -6,15 +6,16 @@ import hotel.DB.ExpenseDB;
 
 public class ExpenseCtrl
 {
-    private String guestName;
+    private String guestName, hotelName;
     private ArrayList<Expense> expenses;
     private ExpenseDB expenseDB;
     
-    public ExpenseCtrl(String guestName)
+    public ExpenseCtrl(String guestName, String hotelName)
     {
         this.guestName = guestName;
+        this.hotelName = hotelName;
         expenseDB = new ExpenseDB();
-        expenses = expenseDB.getExpensesByGuest(guestName);
+        expenses = expenseDB.getExpensesByGuest(guestName, hotelName);
     }
     
     public String getGuestName()
@@ -25,7 +26,18 @@ public class ExpenseCtrl
     public void setGuestName(String guestName)
     {
         this.guestName = guestName;
-        expenses = expenseDB.getExpensesByGuest(guestName);
+        expenses = expenseDB.getExpensesByGuest(guestName, hotelName);
+    }
+
+    public String getHotelName()
+    {
+        return hotelName;
+    }
+
+    public void setHotelName(String hotelName)
+    {
+        this.hotelName = hotelName;
+        expenses = expenseDB.getExpensesByGuest(guestName, hotelName);
     }
     
     public Expense getExpenseById(int id)
@@ -33,17 +45,18 @@ public class ExpenseCtrl
         return expenses.get(id);
     }
     
-    public static Expense[] getExpensesByGuest(String name)
+    public static Expense[] getExpensesByGuest(String name, String hotelName)
     {
         ExpenseDB expenseDB = new ExpenseDB();
-        ArrayList<Expense> expenses = expenseDB.getExpensesByGuest(name);
+        ArrayList<Expense> expenses = expenseDB.getExpensesByGuest(name, 
+                hotelName);
         return expenses.toArray(new Expense[expenses.size()]);
     }
     
     public void removeExpense(int id)
     {
         Expense expense = expenses.get(id);
-        expenseDB.delete(expense.getName(), guestName);
+        expenseDB.delete(expense.getName(), guestName, hotelName);
         expenses.remove(id);
     }
     
@@ -54,7 +67,7 @@ public class ExpenseCtrl
                     + "was already added.");
         Expense expense = new Expense(name, price);
         expenses.add(expense);
-        expenseDB.insertExpense(expense, guestName);
+        expenseDB.insertExpense(expense, guestName, hotelName);
     }
     
     public void editExpense(int id, String name, double price)
@@ -65,13 +78,14 @@ public class ExpenseCtrl
             throw new IllegalStateException("Another expense with the specified"
                     + " name was already added.");
         Expense newExpense = new Expense(name, price);
-        expenseDB.updateExpense(newExpense, oldExpense.getName(), guestName);
+        expenseDB.updateExpense(newExpense, oldExpense.getName(), guestName, 
+                hotelName);
         expenses.set(id, newExpense);
     }
     
     public Expense getExpenseByName(String name)
     {
-        return expenseDB.getExpense(name, guestName);
+        return expenseDB.getExpense(name, guestName, hotelName);
     }
     
     public int getExpenseCount()

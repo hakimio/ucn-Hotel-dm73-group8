@@ -61,7 +61,7 @@ public class GuestCtrl
     public void removeGuest(int id)
     {
         Guest guest = guests.get(id);
-        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName());
+        ExpenseCtrl expenseCtrl = new ExpenseCtrl(guest.getName(), hotelName);
         for(int i = 0; i < expenseCtrl.getExpenseCount(); i++)
         {
             expenseCtrl.removeExpense(0);

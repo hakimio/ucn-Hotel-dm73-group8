@@ -18,14 +18,15 @@ public class ExpenseDB
         return where("");
     }
     
-    public ArrayList<Expense> getExpensesByGuest(String name)
+    public ArrayList<Expense> getExpensesByGuest(String name, String hotelName)
     {
-        return where("guestName ='" + name + "'");
+        return where("guestName ='"+name+"' AND hotelName ='"+hotelName+"'");
     }
     
-    public Expense getExpense(String name, String guestName)
+    public Expense getExpense(String name, String guestName, String hotelName)
     {
-        return singleWhere("name='"+name+"' AND guestName='" + guestName + "'");
+        return singleWhere("name='"+name+"' AND guestName='" + guestName + "'"+
+                " AND hotelName='" + hotelName + "'");
     }
 
     
@@ -107,12 +108,12 @@ public class ExpenseDB
         return null;
     }
     
-    public int delete(String name, String guestName)
+    public int delete(String name, String guestName, String hotelName)
     {
         //row count
         int rc = -1;
         String query = "DELETE FROM expenses WHERE name='"+name + "' AND "
-                + "guestName='" + guestName + "'";
+                + "guestName='" + guestName + "' AND hotelName='"+hotelName+"'";
         try
         {
             Statement stmt = con.createStatement();
@@ -128,14 +129,16 @@ public class ExpenseDB
         return rc;
     }
     //@SuppressWarnings("empty-statement")
-    public int insertExpense(Expense expense, String guestName)
+    public int insertExpense(Expense expense, String guestName,String hotelName)
     {
         //int nextId = GetMax.getMaxId("select max(id) from customer") + 1;
         int rc = -1;
-        String query = "INSERT INTO expenses(name, price, guestName) VALUES('"
+        String query = "INSERT INTO expenses(name, price, guestName, hotelName)"
+                + " VALUES('"
                 + expense.getName() + "','"
                 + expense.getPrice() + "','"
-                + guestName + "')";
+                + guestName + "','"
+                + hotelName + "')";
         try
         {
             con.setAutoCommit(false);
@@ -163,10 +166,10 @@ public class ExpenseDB
         return rc;
     }
     
-    public String getGuestName(Expense expense)
+    public String getGuestName(Expense expense, String hotelName)
     {
         String query = "SELECT guestName FROM expenses WHERE name = '" + 
-                expense.getName() + "'";
+                expense.getName() + "' AND hotelName='" + hotelName + "'";
         ResultSet results;
         String guestName = null;
         try
@@ -189,13 +192,15 @@ public class ExpenseDB
         return guestName;
     }
     
-    public int updateExpense(Expense expense, String oldName, String guestName)
+    public int updateExpense(Expense expense, String oldName, String guestName, 
+            String hotelName)
     {
         int rc = -1;
         String query = "Update expenses SET "+
                 "name ='" + expense.getName() + "', "+
                 "price ='" + expense.getPrice() + "' "+
-                "WHERE name='" + oldName + "' AND guestName='"+guestName+"'";
+                "WHERE name='" + oldName + "' AND guestName='"+guestName+"' "
+                + "AND hotelName='" + hotelName + "'";
         try
         {
             Statement stmt = con.createStatement();

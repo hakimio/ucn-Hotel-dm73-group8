@@ -2,6 +2,7 @@ package hotel.DB;
 
 import java.sql.*;
 import hotel.core.Hotel;
+import java.io.*;
 import java.util.ArrayList;
 
 public class HotelDB
@@ -20,7 +21,7 @@ public class HotelDB
         
     public Hotel getHotel(String name)
     {
-        return singleWhere("name = \""+name+"\"");
+        return singleWhere("name = '"+name+"'");
     }
     
     private Hotel singleWhere(String wClause)
@@ -43,6 +44,10 @@ public class HotelDB
         catch (Exception e)
         {
             System.out.println(e.getMessage());
+            Writer writer = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(writer);
+            e.printStackTrace(printWriter);
+            System.out.println(writer.toString());
         }
         
         return  hotel;
