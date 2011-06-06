@@ -4,10 +4,10 @@ import java.sql.*;
 
 public class DBConnection
 {
-    private static final String user = "tomas";
-    private static final String pass = "samot";
-    private static final String driver = "jdbc:mysql://localhost/";
-    private static final String dbName = "AHPI";
+    private static final String user = "DM73_8";
+    private static final String pass = "MaaGodt";
+    private static final String driver = "jdbc:sqlserver://balder.ucn.dk:1433";
+    private static final String dbName = ";databaseName=DM73_8";
     private static Connection con = null;
     
     private static DBConnection instance = null;
@@ -17,7 +17,7 @@ public class DBConnection
         String url = driver + dbName;
         try
         {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
             con = DriverManager.getConnection(url, user, pass);
             System.out.println("Connection established!");
             con.setAutoCommit(true);
