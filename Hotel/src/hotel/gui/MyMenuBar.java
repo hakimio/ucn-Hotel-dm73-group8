@@ -133,6 +133,8 @@ public class MyMenuBar extends JMenuBar
     
     private void addHotel()
     {
+        for (int i = 0; i < inputs.length; i++)
+            ((JTextField)inputs[i]).setText("");
         final JDialog addDialog = GUI.dialog("New Hotel", labals, inputs);
         JPanel myPanel = (JPanel)addDialog.getContentPane().getComponent(0);
         
