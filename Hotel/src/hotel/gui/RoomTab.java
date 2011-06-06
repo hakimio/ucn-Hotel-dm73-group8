@@ -17,6 +17,7 @@ import hotel.utils.DateUtils;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Arrays;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -520,20 +521,22 @@ public class RoomTab extends JPanel
     {
         if (roomCtrl == null)
             roomCtrl = new RoomCtrl(GUI.getHotel().getName());
-        final JDialog editDialog = GUI.dialog("Edit", roomLabels, roomInputs);
+        JLabel[] editLabels = Arrays.copyOfRange(roomLabels, 1, 4);
+        JComponent[] editInputs = Arrays.copyOfRange(roomInputs, 1, 4);
+        final JDialog editDialog = GUI.dialog("Edit", editLabels, editInputs);
         JPanel myPanel = (JPanel)editDialog.getContentPane().getComponent(0);
         
         final Room room = roomCtrl.getRoomById(id);
-        final JSpinner roomNr = ((JSpinner)myPanel.getComponent(1));
-        roomNr.setValue(room.getRoomNr());
-        final JSpinner size = ((JSpinner)myPanel.getComponent(3));
+        /*final JSpinner roomNr = ((JSpinner)myPanel.getComponent(1));
+        roomNr.setValue(room.getRoomNr());*/
+        final JSpinner size = ((JSpinner)myPanel.getComponent(1));
         size.setValue(room.getSqMeters());
-        final JSpinner price = ((JSpinner)myPanel.getComponent(5));
+        final JSpinner price = ((JSpinner)myPanel.getComponent(3));
         price.setValue(room.getMeterCost());
-        final JSpinner bedrooms = (JSpinner)myPanel.getComponent(7);
+        final JSpinner bedrooms = (JSpinner)myPanel.getComponent(5);
         bedrooms.setValue(room.getNrOfBedrooms());
 
-        JButton okButton = ((JButton)myPanel.getComponent(8));
+        JButton okButton = ((JButton)myPanel.getComponent(6));
         okButton.addActionListener(new ActionListener() {
 
             @Override
@@ -541,7 +544,7 @@ public class RoomTab extends JPanel
             {
                 try
                 {
-                    int roomNrI = (Integer)roomNr.getValue();
+                    int roomNrI = roomCtrl.getRoomById(id).getRoomNr();
                     int sizeI = (Integer) size.getValue();
                     int priceI = (Integer) price.getValue();
                     int bedrooomsI = (Integer) bedrooms.getValue();
