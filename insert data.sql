@@ -1,4 +1,4 @@
-use AHPI;
+use DM73_8;
 
 insert into hotels (name, address)
 values('Toronto Don Valley', '1250 Eglinton Avenue East, Toronto, 
@@ -17,14 +17,14 @@ values('Brick Thompson', 'Toronto Don Valley');
 insert into guests(name, hotelName)
 values('John Black', 'Crowne Plaza Chateau Lacombe');
 
-insert into expenses(name, price, guestName)
-values('martini', 120, 'Joe Doe');
+insert into expenses(name, price, guestName, hotelName)
+values('martini', 120, 'Joe Doe', 'Toronto Don Valley');
 
-insert into expenses(name, price, guestName)
-values('map', 20, 'Joe Doe');
+insert into expenses(name, price, guestName, hotelName)
+values('map', 20, 'Joe Doe', 'Toronto Don Valley');
 
-insert into expenses(name, price, guestName)
-values('Fanta', 30, 'Brick Thompson');
+insert into expenses(name, price, guestName, hotelName)
+values('Fanta', 30, 'Brick Thompson', 'Toronto Don Valley');
 
 insert into rooms(roomNr, meterCost, sqMeters, nrOfBedrooms, hotelName)
 values(1, 7, 25, 2, 'Toronto Don Valley');
